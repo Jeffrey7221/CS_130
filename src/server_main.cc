@@ -11,9 +11,10 @@
 #include <cstdlib>
 #include <iostream>
 #include <boost/asio.hpp>
-#include "session_class.h"
-#include "server_class.h"
+#include "session.h"
+#include "server.h"
 
+using boost::asio::ip::tcp;
 
 int main(int argc, char* argv[]) {
   try {

@@ -35,20 +35,25 @@ message(STATUS "Boost version: ${Boost_VERSION}")
 include_directories(include)
 
 # Update name and srcs
-add_library(session_class src/session_class.cc)
-add_library(server_class src/server_class.cc)
-target_link_libraries(server_class session_class)
+add_library(session_class src/session.cc)
+add_library(server_class src/server.cc)
+add_library(request_parser src/http/request_parser.cc src/http/reply.cc)
+#target_link_libraries(server_class session_class request_parser)
 
 # Update executable name, srcs, and deps
 add_executable(server src/server_main.cc)
-target_link_libraries(server session_class server_class Boost::system)
+target_link_libraries(server server_class session_class request_parser Boost::system)
 
-# TODO(!): Update test executable name, srcs, and deps
+# Update test executable name, srcs, and deps
 # add_executable(example_lib_test tests/example_lib_test.cc)
 # target_link_libraries(example_lib_test example_lib gtest_main)
 
-# TODO(!): Update with test binary
-# gtest_discover_tests(example_lib_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+add_executable(request_parser_test tests/request_parser_test.cc)
+target_link_libraries(request_parser_test request_parser gtest_main)
+
+
+# Update with test binary
+gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # TODO(!): Update with target/test targets
 # include(cmake/CodeCoverageReportConfig.cmake)

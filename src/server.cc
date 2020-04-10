@@ -4,9 +4,10 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
-#include "session_class.h"
-#include "server_class.h"
+#include "session.h"
+#include "server.h"
 
+using boost::asio::ip::tcp;
 
 server::server(boost::asio::io_service& io_service, short port)
   : io_service_(io_service),
@@ -25,9 +26,7 @@ void server::handle_accept(session* new_session,
   const boost::system::error_code& error) {
   if (!error) {
     new_session->start();
-  } else {
-    delete new_session;
-  }
+  } 
   
   start_accept();
 }
