@@ -1,4 +1,3 @@
-// server_class header
 #ifndef SERVER_H
 #define SERVER_H    
 
@@ -15,7 +14,10 @@ class server {
     server(boost::asio::io_service& io_service, short port);
 
   private:
+    // create a new session, start accepting requests
     void start_accept();
+
+    // handle error and start accept
     void handle_accept(session* new_session,
       const boost::system::error_code& error);
 

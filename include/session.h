@@ -1,4 +1,5 @@
-// session_class header based off https://www.boost.org/doc/libs/1_64_0/doc/html/boost_asio/example/cpp11/http/server/connection.hpp
+// session header based off 
+// https://www.boost.org/doc/libs/1_64_0/doc/html/boost_asio/example/cpp11/http/server/connection.hpp
 
 #ifndef SESSION_H
 #define SESSION_H  
@@ -32,24 +33,24 @@ class session {
     enum { max_length = 1024 };
     char data_[max_length];
 
+    // reading in of bytes, handles HTTP formatting
     void handle_read(const boost::system::error_code& error,size_t bytes_transferred);
 
+    // writing out of message
     void handle_write(const boost::system::error_code& error,size_t bytes_transferred);
 
     reply echo_response(size_t bytes_transferred);
+
     reply echo_bad_response(size_t bytes_transferred);
 
-
-    /// The incoming request.
+    // The incoming request.
     request request_;
 
-    /// The parser for the incoming request.
+    // The parser for the incoming request.
     request_parser request_parser_;
 
-    /// The reply to be sent back to the client.
+    // The reply to be sent back to the client.
     reply rep;
-
-
 };
 
 #endif
