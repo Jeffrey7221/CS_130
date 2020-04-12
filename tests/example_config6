@@ -1,0 +1,12 @@
+# Missing left curly brace - Expect Failure
+
+foo "bar";
+
+server {
+  root { 
+    admin 
+      http 192.23.134.3;
+    }
+  }
+}
+

@@ -77,7 +77,6 @@ void session::handle_read(const boost::system::error_code& error,
     
     if (result == request_parser::good) { // the URL is valid
       
-      printf ("200: %c %c \n", 'a', 65);
       rep = echo_response(bytes_transferred);
 
       // handle write portion
@@ -89,7 +88,6 @@ void session::handle_read(const boost::system::error_code& error,
       ));
     } else if (result == request_parser::bad) { // the URL is invalid
       
-      printf ("400: %c %c \n", 'a', 65);
       rep = echo_bad_response(bytes_transferred);
 
       // handle write portion
@@ -100,7 +98,6 @@ void session::handle_read(const boost::system::error_code& error,
         boost::asio::placeholders::bytes_transferred
       ));
     } else {
-      printf ("else: %c %c \n", 'a', 65);
       handle_read(error,bytes_transferred);
     }
   }

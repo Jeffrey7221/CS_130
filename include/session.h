@@ -22,7 +22,7 @@ using http::server::reply;
 class session {
   public:
     session(boost::asio::io_service& io_service)
-      : socket_(io_service) { };
+      : socket_(io_service) {};
 
     tcp::socket& socket();
     void start();

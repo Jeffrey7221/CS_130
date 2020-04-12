@@ -1,0 +1,11 @@
+# Nested braces - Expect Success
+
+foo "bar";
+
+server {
+  root { 
+    http 192.23.134.3;
+    listen 8080;
+  }
+}
+

@@ -1,0 +1,17 @@
+# Multiple statements - Expect Success
+
+server {
+  root { 
+    http 192.23.134.3;
+    listen 1024;
+    listen 1023;
+  }
+}
+
+server {
+  root { 
+    http 192.23.134.3;
+    listen 0;
+  }
+}
+

@@ -1,0 +1,11 @@
+# Extra invalid right curly brace - Expect Failure
+
+foo "bar";
+
+server {
+  listen   8080;
+  server_name foo.com;
+  root /home/ubuntu/sites/foo/;
+}
+}
+

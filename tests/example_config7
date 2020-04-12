@@ -1,0 +1,6 @@
+# Missing token before curly braces - Expect Failure
+
+{
+  http 192.23.134.3;
+}
+
