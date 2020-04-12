@@ -22,19 +22,19 @@ tcp::socket& session::socket() {
 reply session::echo_response(size_t bytes_transferred) {
   reply rep;
   rep.status = reply::ok; // set to http 200
-  rep.content = std::string(data_, bytes_transferred); // send request in body of response
+  rep.content = std::string(data_, strlen(data_)-2); // send request in body of response
   rep.headers.resize(2);
   rep.headers[0].name = "Content-Length";
   rep.headers[0].value = std::to_string(bytes_transferred);
   rep.headers[1].name = "Content-Type";
-  rep.headers[1].value = "text/plain"; // Set the content type to text/plain
+  rep.headers[1].value = "text/plain"; // set the content type to text/plain
   return rep;
 }
 
 reply session::echo_bad_response(size_t bytes_transferred) {
   reply rep;
   rep.status = reply::bad_request; // set to http 400
-  rep.content = std::string(data_, bytes_transferred); // send request in body of response
+  rep.content = std::string(data_, strlen(data_)-2); // send request in body of response
   rep.headers.resize(2);
   rep.headers[0].name = "Content-Length";
   rep.headers[0].value = std::to_string(bytes_transferred);

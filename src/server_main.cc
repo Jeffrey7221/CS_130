@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
     }
 
     int port_num = get_config_settings(argv[1]);
-    if (port_num < 1024 || port_num > 65535) {
+    if (port_num < 0 || port_num > 65535) {
       std::cerr << "Invalid port number in config file\n";
       return 2;
     }
