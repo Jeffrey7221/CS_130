@@ -39,9 +39,9 @@ class session {
     // writing out of message
     void handle_write(const boost::system::error_code& error,size_t bytes_transferred);
 
-    reply echo_response(size_t bytes_transferred);
+    reply echo_response();
 
-    reply echo_bad_response(size_t bytes_transferred);
+    reply echo_bad_response();
 
     // The incoming request.
     request request_;

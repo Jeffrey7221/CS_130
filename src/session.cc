@@ -19,25 +19,29 @@ tcp::socket& session::socket() {
   return socket_;
 }
 
-reply session::echo_response(size_t bytes_transferred) {
+reply session::echo_response() {
+  size_t content_size = strlen(data_)-2; // size of request content
+
   reply rep;
   rep.status = reply::ok; // set to http 200
-  rep.content = std::string(data_, strlen(data_)-2); // send request in body of response
+  rep.content = std::string(data_, content_size); // send request in body of response
   rep.headers.resize(2);
   rep.headers[0].name = "Content-Length";
-  rep.headers[0].value = std::to_string(bytes_transferred);
+  rep.headers[0].value = std::to_string(content_size);
   rep.headers[1].name = "Content-Type";
   rep.headers[1].value = "text/plain"; // set the content type to text/plain
   return rep;
 }
 
-reply session::echo_bad_response(size_t bytes_transferred) {
+reply session::echo_bad_response() {
+  size_t content_size = strlen(data_)-2; // size of request content
+
   reply rep;
   rep.status = reply::bad_request; // set to http 400
-  rep.content = std::string(data_, strlen(data_)-2); // send request in body of response
+  rep.content = std::string(data_, content_size); // send request in body of response
   rep.headers.resize(2);
   rep.headers[0].name = "Content-Length";
-  rep.headers[0].value = std::to_string(bytes_transferred);
+  rep.headers[0].value = std::to_string(content_size);
   rep.headers[1].name = "Content-Type";
   rep.headers[1].value = "text/plain"; // set the content type to text/plain
   return rep;
@@ -77,7 +81,7 @@ void session::handle_read(const boost::system::error_code& error,
     
     if (result == request_parser::good) { // the URL is valid
       
-      rep = echo_response(bytes_transferred);
+      rep = echo_response();
 
       // handle write portion
       boost::asio::async_write(socket_,rep.to_buffers(),
@@ -88,7 +92,7 @@ void session::handle_read(const boost::system::error_code& error,
       ));
     } else if (result == request_parser::bad) { // the URL is invalid
       
-      rep = echo_bad_response(bytes_transferred);
+      rep = echo_bad_response();
 
       // handle write portion
       boost::asio::async_write(socket_,rep.to_buffers(),
