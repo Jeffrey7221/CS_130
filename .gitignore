@@ -4,3 +4,4 @@ build
 build_*
 mirror
 x_build.sh
+build_coverage
