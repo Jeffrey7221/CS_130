@@ -24,10 +24,10 @@ steps:
     '.'
   ]
 - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'build',
-      '-f', 'docker/coverage.Dockerfile',
-      '-t', 'gcr.io/'$PROJECT_ID/wfh-web-server:latest',
-      '.'
-    ]
+  args: [
+    'build',
+    '-f', 'docker/coverage.Dockerfile',
+    '-t', 'gcr.io/$PROJECT_ID/wfh-web-server:latest',
+    '.'
+  ]
 images: ['gcr.io/$PROJECT_ID/wfh-web-server:base', 'gcr.io/$PROJECT_ID/wfh-web-server:latest']
