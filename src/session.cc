@@ -7,10 +7,8 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "session.h"
-
 #include "http/request_parser.h"
 #include "http/reply.h"
-
 #include <boost/algorithm/string/replace.hpp>
 
 using boost::asio::ip::tcp;

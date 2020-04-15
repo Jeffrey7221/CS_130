@@ -1,27 +1,12 @@
 // An nginx config file parser.
 
+#ifndef NGINX_CONFIG_PARSER_H
+#define NGINX_CONFIG_PARSER_H
+
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
-
-class NginxConfig;
-
-// the parsed representation of a single config statement
-class NginxConfigStatement {
-  public:
-    std::string ToString(int depth);
-    std::vector<std::string> tokens_;
-    std::unique_ptr<NginxConfig> child_block_;
-};
-
-// the parsed representation of the entire config
-class NginxConfig {
-  public:
-    std::string ToString(int depth = 0);
-    std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
-    std::string GetConfig(std::string key);
-};
 
 // the driver that parses a config file and generates an NginxConfig
 class NginxConfigParser {
@@ -57,3 +42,5 @@ class NginxConfigParser {
 
     TokenType ParseToken(std::istream* input, std::string* value);
 };
+
+#endif // NGINX_CONFIG_PARSER_H

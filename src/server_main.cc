@@ -12,7 +12,9 @@
 #include <boost/asio.hpp>
 #include "session.h"
 #include "server.h"
-#include "config_parser/config_parser.h"
+#include "config_parser/nginx_config.h"
+#include "config_parser/nginx_config_parser.h"
+#include "config_parser/nginx_config_statement.h"
 
 using boost::asio::ip::tcp;
 

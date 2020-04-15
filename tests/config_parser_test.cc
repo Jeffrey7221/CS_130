@@ -1,5 +1,7 @@
 #include "gtest/gtest.h"
-#include "config_parser/config_parser.h"
+#include "config_parser/nginx_config.h"
+#include "config_parser/nginx_config_parser.h"
+#include "config_parser/nginx_config_statement.h"
 
 // testing port parsing works properly
 class NginxConfigPortTestFixture : public ::testing::Test 

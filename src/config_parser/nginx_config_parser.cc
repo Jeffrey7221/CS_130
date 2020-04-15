@@ -14,71 +14,10 @@
 #include <stack>
 #include <string>
 #include <vector>
-#include "config_parser/config_parser.h"
+#include "config_parser/nginx_config.h"
+#include "config_parser/nginx_config_parser.h"
+#include "config_parser/nginx_config_statement.h"
 
-std::string NginxConfig::ToString(int depth) {
-  std::string serialized_config;
-  for (const auto& statement : statements_) {
-    serialized_config.append(statement->ToString(depth));
-  }
-  return serialized_config;
-}
-
-// function allows you to get any single line parameter from the config file
-std::string NginxConfig::GetConfig(std::string key) {
-  std::string value = "";
-
-  for (std::vector<std::shared_ptr<NginxConfigStatement>>::iterator
-    it = this->statements_.begin(); it != this->statements_.end(); ++it) {
-
-    // for each statement, loop through each of it's segments
-    std::string prev = "";
-    for (std::vector<std::string>::iterator it2 = (*it)->tokens_.begin();
-      it2 != (*it)->tokens_.end(); ++it2) {
-      if (prev == key) {
-        return *it2;
-      }
-
-      prev = *it2;
-    }
-    
-    // recursively enter statements which have children
-    if ((*it)->child_block_ != nullptr) {
-      std::string inner = (*it)->child_block_->GetConfig(key);
-      if (inner.length() > 0) {
-        return inner;
-      }
-    }
-  }
-  
-  return "";
-}
-
-// format the statements as strings for printing purposes
-std::string NginxConfigStatement::ToString(int depth) {
-  std::string serialized_statement;
-  for (int i = 0; i < depth; ++i) {
-    serialized_statement.append("  ");
-  }
-  for (unsigned int i = 0; i < tokens_.size(); ++i) {
-    if (i != 0) {
-      serialized_statement.append(" ");
-    }
-    serialized_statement.append(tokens_[i]);
-  }
-  if (child_block_.get() != nullptr) {
-    serialized_statement.append(" {\n");
-    serialized_statement.append(child_block_->ToString(depth + 1));
-    for (int i = 0; i < depth; ++i) {
-      serialized_statement.append("  ");
-    }
-    serialized_statement.append("}");
-  } else {
-    serialized_statement.append(";");
-  }
-  serialized_statement.append("\n");
-  return serialized_statement;
-}
 
 const char* NginxConfigParser::TokenTypeAsString(TokenType type) {
   switch (type) {
