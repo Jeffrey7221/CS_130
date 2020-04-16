@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include "config_parser/nginx_config.h"
+#include "config_parser/nginx_config_parser.h"
 #include "config_parser/nginx_config_statement.h"
 
 std::string NginxConfig::ToString(int depth) {
@@ -53,4 +54,20 @@ std::string NginxConfig::GetConfig(std::string key) {
   }
   
   return "";
+}
+
+// returns the port number in use
+short NginxConfig::getPort(char* config_file){
+  short port_num = -1;
+
+  // parse out server configuration
+  config_parser->Parse(config_file, this);
+
+  try {
+    port_num = std::stoi(this->GetConfig("listen"));
+  } catch (std::exception& e) {
+    std::cerr << "Exception: " << e.what() << "\n";
+  }
+
+  return port_num;
 }

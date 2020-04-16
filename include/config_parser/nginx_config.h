@@ -10,6 +10,7 @@
 
 // the parsed representation of a single config statement
 class NginxConfigStatement;
+class NginxConfigParser;
 
 // the parsed representation of the entire config
 class NginxConfig {
@@ -17,6 +18,10 @@ class NginxConfig {
     std::string ToString(int depth = 0);
     std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
     std::string GetConfig(std::string key);
+    short getPort(char* config_file);
+    
+  private:
+    NginxConfigParser* config_parser;
 };
 
 #endif // NGINX_CONFIG_H

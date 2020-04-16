@@ -18,24 +18,6 @@
 
 using boost::asio::ip::tcp;
 
-// UPDATE: may need to change later to handle more configurations
-int get_config_settings(char* config_file) {
-  int port_num = -1;
-
-  // parse out server configuration
-  NginxConfigParser config_parser;
-  NginxConfig config;
-  config_parser.Parse(config_file, &config);
-
-  try {
-    port_num = std::stoi(config.GetConfig("listen"));
-  } catch (std::exception& e) {
-    std::cerr << "Exception: " << e.what() << "\n";
-  }
-
-  return port_num;
-}
-
 int main(int argc, char* argv[]) {
   try {
     if (argc != 2) {
@@ -43,7 +25,8 @@ int main(int argc, char* argv[]) {
       return 1;
     }
 
-    int port_num = get_config_settings(argv[1]);
+    NginxConfig config;
+    short port_num = config.getPort(argv[1]);
     if (port_num < 0 || port_num > 65535) {
       std::cerr << "Invalid port number in config file\n";
       return 2;
