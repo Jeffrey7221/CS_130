@@ -56,7 +56,7 @@ void session::start() {
 }
 
 // based on https://www.boost.org/doc/libs/1_64_0/doc/html/boost_asio/example/cpp11/http/server/connection.cpp
-void session::handle_read(const boost::system::error_code& error,
+int session::handle_read(const boost::system::error_code& error,
   size_t bytes_transferred) {
   if (!error) {
 
@@ -88,6 +88,7 @@ void session::handle_read(const boost::system::error_code& error,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred
       ));
+      return 0;
     } else if (result == request_parser::bad) { // the URL is invalid
       
       rep = echo_bad_response();
@@ -99,17 +100,21 @@ void session::handle_read(const boost::system::error_code& error,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred
       ));
+      return 1;
     } else {
       handle_read(error,bytes_transferred);
     }
   }
+  return -1;
 }
 
-void session::handle_write(const boost::system::error_code& error,
+int session::handle_write(const boost::system::error_code& error,
   size_t bytes_transferred) {
   if (!error) {
     boost::system::error_code ignored_ec;
     socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both,
       ignored_ec);
+    return 0;
   } 
+  return -1;
 }

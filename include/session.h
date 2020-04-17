@@ -8,6 +8,7 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include "gtest/gtest.h"
 
 #include "http/request.h"
 #include "http/request_parser.h"
@@ -25,7 +26,18 @@ class session {
       : socket_(io_service) {};
 
     tcp::socket& socket();
+
     void start();
+    
+    // Make our tests class a friend so we can access private methods
+    friend class SessionTestFix_EchoResponseTest_Test;
+    friend class SessionTestFix_EchoBadResponseTest_Test;
+    friend class SessionTestFix_ErrorCodeTest_Test;
+    friend class SessionTestFix_PreFormattedInputTest_Test;
+    friend class SessionTestFix_NonPreFormattedInputTest_Test;
+    friend class SessionTestFix_BadRequestTest_Test;
+    friend class SessionTestFix_CloseSocketTest_Test;
+    friend class SessionTestFix_StartTest_Test;
 
   private:
 
@@ -33,11 +45,16 @@ class session {
     enum { max_length = 1024 };
     char data_[max_length];
 
+    //Return value for handle_read and handle_write: 
+    // 0 if good
+    // 1 if bad input
+    // -1 if socket connection error
+
     // reading in of bytes, handles HTTP formatting
-    void handle_read(const boost::system::error_code& error,size_t bytes_transferred);
+    int handle_read(const boost::system::error_code& error,size_t bytes_transferred);
 
     // writing out of message
-    void handle_write(const boost::system::error_code& error,size_t bytes_transferred);
+    int handle_write(const boost::system::error_code& error,size_t bytes_transferred);
 
     reply echo_response();
 

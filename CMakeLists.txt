@@ -53,11 +53,13 @@ add_executable(reply_test tests/reply_test.cc)
 add_executable(nginx_config_test tests/nginx_config_test.cc)
 add_executable(nginx_config_parser_test tests/nginx_config_parser_test.cc)
 add_executable(nginx_config_statement_test tests/nginx_config_statement_test.cc src/config_parser/nginx_config)
+add_executable(session_test tests/session_test.cc)
 target_link_libraries(request_parser_test request_parser_lib gtest_main)
 target_link_libraries(reply_test reply_lib gtest_main Boost::system)
 target_link_libraries(nginx_config_test nginx_config nginx_config_parser nginx_config_statement gtest_main)
 target_link_libraries(nginx_config_parser_test nginx_config nginx_config_parser nginx_config_statement gtest_main)
 target_link_libraries(nginx_config_statement_test nginx_config nginx_config_parser nginx_config_statement gtest_main)
+target_link_libraries(session_test session_lib request_parser_lib gtest_main gmock_main Boost::system)
 
 # Update with test binary
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -65,9 +67,10 @@ gtest_discover_tests(nginx_config_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_
 gtest_discover_tests(nginx_config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(nginx_config_statement_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
-# TODO(!) --> update with session, server, reply, request parser tests
+# TODO(!) --> update with server, reply, request parser tests
 # Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS server reply_lib request_parser_lib nginx_config nginx_config_parser nginx_config_statement
-  TESTS request_parser_test nginx_config_test nginx_config_parser_test nginx_config_statement_test reply_test)
+generate_coverage_report(TARGETS server reply_lib request_parser_lib nginx_config nginx_config_parser nginx_config_statement session_lib
+  TESTS request_parser_test nginx_config_test nginx_config_parser_test nginx_config_statement_test reply_test session_test)
