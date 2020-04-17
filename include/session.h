@@ -27,7 +27,7 @@ class session {
 
     tcp::socket& socket();
 
-    void start();
+    virtual void start();
     
     // Make our tests class a friend so we can access private methods
     friend class SessionTestFix_EchoResponseTest_Test;
