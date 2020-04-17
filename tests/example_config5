@@ -7,5 +7,8 @@ server {
     admin {
       http 192.23.134.3;
   }
+  # comment here
+  listen 9080;
+  foo2 "bar2";
 }
 

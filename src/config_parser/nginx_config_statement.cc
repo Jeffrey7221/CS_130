@@ -18,7 +18,7 @@
 #include "config_parser/nginx_config_statement.h"
 
 // format the statements as strings for printing purposes
-std::string NginxConfigStatement::ToString(int depth) {
+std::string NginxConfigStatement::  ToString(int depth) {
   std::string serialized_statement;
   for (int i = 0; i < depth; ++i) {
     serialized_statement.append("  ");

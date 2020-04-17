@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
     }
 
     NginxConfig config;
-    short port_num = config.getPort(argv[1]);
+    short port_num = config.GetPort(argv[1]);
     if (port_num < 0 || port_num > 65535) {
       std::cerr << "Invalid port number in config file\n";
       return 2;

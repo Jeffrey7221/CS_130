@@ -13,5 +13,14 @@ server {
     http 192.23.134.3;
     listen 0;
   }
+
+  path {
+    # another comment
+    foo "bar";
+    tcp {
+      # another nested comment
+      bar "foo";
+    }
+  }
 }
 

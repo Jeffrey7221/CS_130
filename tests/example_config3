@@ -1,3 +1,5 @@
-# Empty braces - Expect Success
+
+
+# Empty braces, extra newline - Expect Success
 
 server {}

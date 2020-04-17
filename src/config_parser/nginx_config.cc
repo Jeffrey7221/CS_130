@@ -28,25 +28,24 @@ std::string NginxConfig::ToString(int depth) {
 
 // function allows you to get any single line parameter from the config file
 std::string NginxConfig::GetConfig(std::string key) {
-  std::string value = "";
 
   for (std::vector<std::shared_ptr<NginxConfigStatement>>::iterator
-    it = this->statements_.begin(); it != this->statements_.end(); ++it) {
+    it_state = this->statements_.begin(); it_state != this->statements_.end(); ++it_state) {
 
     // for each statement, loop through each of it's segments
     std::string prev = "";
-    for (std::vector<std::string>::iterator it2 = (*it)->tokens_.begin();
-      it2 != (*it)->tokens_.end(); ++it2) {
+    for (std::vector<std::string>::iterator it_token = (*it_state)->tokens_.begin();
+      it_token != (*it_state)->tokens_.end(); ++it_token) {
       if (prev == key) {
-        return *it2;
+        return *it_token;
       }
 
-      prev = *it2;
+      prev = *it_token;
     }
     
     // recursively enter statements which have children
-    if ((*it)->child_block_ != nullptr) {
-      std::string inner = (*it)->child_block_->GetConfig(key);
+    if ((*it_state)->child_block_ != nullptr) {
+      std::string inner = (*it_state)->child_block_->GetConfig(key);
       if (inner.length() > 0) {
         return inner;
       }
@@ -57,7 +56,7 @@ std::string NginxConfig::GetConfig(std::string key) {
 }
 
 // returns the port number in use
-short NginxConfig::getPort(char* config_file){
+short NginxConfig::GetPort(char* config_file) {
   short port_num = -1;
 
   // parse out server configuration
@@ -66,7 +65,7 @@ short NginxConfig::getPort(char* config_file){
   try {
     port_num = std::stoi(this->GetConfig("listen"));
   } catch (std::exception& e) {
-    std::cerr << "Exception: " << e.what() << "\n";
+    std::cerr << "Exception: " << e.what() << " (port was not a number)\n";
   }
 
   return port_num;

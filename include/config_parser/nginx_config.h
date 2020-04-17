@@ -18,7 +18,7 @@ class NginxConfig {
     std::string ToString(int depth = 0);
     std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
     std::string GetConfig(std::string key);
-    short getPort(char* config_file);
+    short GetPort(char* config_file);
     
   private:
     NginxConfigParser* config_parser;
