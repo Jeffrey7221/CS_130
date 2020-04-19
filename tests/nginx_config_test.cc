@@ -147,7 +147,7 @@ class GetPortTestFixture : public ::testing::Test
 TEST_F(GetPortTestFixture, EmptyPortConfig) {
 
   // should cerr an exception
-  char input_file[20] = "example_config2";
+  char input_file[50] = "./example_configs/example_config2";
   short port_num = out_config.GetPort(input_file);
 
   EXPECT_EQ(port_num, -1);
@@ -156,7 +156,7 @@ TEST_F(GetPortTestFixture, EmptyPortConfig) {
 // simply test setting port to 8080
 TEST_F(GetPortTestFixture, PortConfig) {
 
-  char input_file[20] = "example_config";
+  char input_file[50] = "./example_configs/example_config";
   short port_num = out_config.GetPort(input_file);
 
   EXPECT_EQ(port_num, 8080);
@@ -166,7 +166,7 @@ TEST_F(GetPortTestFixture, PortConfig) {
 TEST_F(GetPortTestFixture, NoPortConfig) {
 
   // should cerr an exception
-  char input_file[20] = "example_config3";
+  char input_file[50] = "./example_configs/example_config3";
   short port_num = out_config.GetPort(input_file);
 
   EXPECT_EQ(port_num, -1);
@@ -175,7 +175,7 @@ TEST_F(GetPortTestFixture, NoPortConfig) {
 // should pass within a nested statement
 TEST_F(GetPortTestFixture, NestedPortConfig) {
 
-  char input_file[20] = "example_config4";
+  char input_file[50] = "./example_configs/example_config4";
   short port_num = out_config.GetPort(input_file);
 
   EXPECT_EQ(port_num, 8080);
@@ -184,7 +184,7 @@ TEST_F(GetPortTestFixture, NestedPortConfig) {
 // should recongize different port numbers
 TEST_F(GetPortTestFixture, PortConfigNum) {
 
-  char input_file[20] = "example_config8";
+  char input_file[50] = "./example_configs/example_config8";
   short port_num = out_config.GetPort(input_file);
 
   EXPECT_EQ(port_num, 9000);
@@ -194,7 +194,7 @@ TEST_F(GetPortTestFixture, PortConfigNum) {
 // right now this should return the first one
 TEST_F(GetPortTestFixture, MultiPortConfig) {
 
-  char input_file[20] = "example_config9";
+  char input_file[50] = "./example_configs/example_config9";
   short port_num = out_config.GetPort(input_file);
 
   EXPECT_EQ(port_num, 1024);
