@@ -17,6 +17,11 @@ echo "HTTP/1.0 400 Bad Request" > bad_header.txt
 
 
 
+# erase nondeterministic behavior
+sleep 1
+
+
+
 # TEST 1 (200 OK) good HTTP POST request
 echo "POST /test HTTP/1.1
 Host: foo.example
