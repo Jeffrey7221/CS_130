@@ -14,6 +14,7 @@
 #include <stack>
 #include <string>
 #include <vector>
+#include <boost/log/trivial.hpp>
 #include "config_parser/nginx_config.h"
 #include "config_parser/nginx_config_parser.h"
 #include "config_parser/nginx_config_statement.h"
@@ -65,7 +66,7 @@ short NginxConfig::GetPort(char* config_file) {
   try {
     port_num = std::stoi(this->GetConfig("listen"));
   } catch (std::exception& e) {
-    std::cerr << "Exception: " << e.what() << " (port was not a number)\n";
+    BOOST_LOG_TRIVIAL(error) << "Exception: " << e.what() << " (port was not a number)";
   }
 
   return port_num;

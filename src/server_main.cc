@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <boost/asio.hpp>
+#include <boost/log/trivial.hpp>
 #include "session.h"
 #include "server.h"
 #include "config_parser/nginx_config.h"
@@ -19,16 +20,19 @@
 using boost::asio::ip::tcp;
 
 int main(int argc, char* argv[]) {
-  try {
+
+  BOOST_LOG_TRIVIAL(info) << "Starting Server";
+
+  try {  
     if (argc != 2) {
-      std::cerr << "Usage: async_tcp_echo_server <path to config file>\n";
+      BOOST_LOG_TRIVIAL(fatal) << "Usage: ./server ./nginx_config";
       return 1;
     }
 
     NginxConfig config;
     short port_num = config.GetPort(argv[1]);
     if (port_num < 0 || port_num > 65535) {
-      std::cerr << "Invalid port number in config file\n";
+      BOOST_LOG_TRIVIAL(fatal) << "Invalid port number in config file";
       return 2;
     }
 
@@ -39,8 +43,8 @@ int main(int argc, char* argv[]) {
 
     io_service.run();
   } catch (std::exception& e) {
-    std::cerr << "Exception: " << e.what() << "\n";
+    BOOST_LOG_TRIVIAL(error) << "Exception: " << e.what();
   }
-
+  BOOST_LOG_TRIVIAL(info) << "Shutting Down Server";
   return 0;
 }

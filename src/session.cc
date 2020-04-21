@@ -6,10 +6,11 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include "session.h"
 #include "http/request_parser.h"
 #include "http/reply.h"
-#include <boost/algorithm/string/replace.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -56,14 +57,13 @@ void session::start() {
 }
 
 // based on https://www.boost.org/doc/libs/1_64_0/doc/html/boost_asio/example/cpp11/http/server/connection.cpp
-int session::handle_read(const boost::system::error_code& error,
-  size_t bytes_transferred) {
+int session::handle_read(const boost::system::error_code& error, size_t bytes_transferred) {
   if (!error) {
 
     bool formatted = false;
     request_parser::result_type result;
 
-    if ( strcmp(data_+strlen(data_)-2, "\r\n") == 0 ) {
+    if (strcmp(data_+strlen(data_) - 2, "\r\n") == 0) {
       // string is already formatted so don't format it
       std::tie(result, std::ignore) = request_parser_.parse(request_, data_, data_ + bytes_transferred);
 
@@ -104,17 +104,21 @@ int session::handle_read(const boost::system::error_code& error,
     } else {
       handle_read(error,bytes_transferred);
     }
+  } else {
+    BOOST_LOG_TRIVIAL(error) << "Session read error";
   }
   return -1;
 }
 
-int session::handle_write(const boost::system::error_code& error,
-  size_t bytes_transferred) {
+int session::handle_write(const boost::system::error_code& error, size_t bytes_transferred) {
+
   if (!error) {
     boost::system::error_code ignored_ec;
-    socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both,
-      ignored_ec);
+    socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
     return 0;
-  } 
+  } else {
+    BOOST_LOG_TRIVIAL(error) << "Session write error";
+  }
+
   return -1;
 }

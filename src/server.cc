@@ -4,6 +4,7 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <boost/log/trivial.hpp>
 #include "session.h"
 #include "server.h"
 
@@ -26,7 +27,9 @@ void server::handle_accept(session* new_session,
   const boost::system::error_code& error) {
   if (!error) {
     new_session->start();
-  } 
+  } else {
+    BOOST_LOG_TRIVIAL(error) << "Server handle accept error";
+  }
   
   start_accept();
 }
