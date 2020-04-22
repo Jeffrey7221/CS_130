@@ -50,6 +50,7 @@ target_link_libraries(server server_lib session_lib request_parser_lib nginx_con
 
 # Update test executable name, srcs, and deps
 add_executable(request_parser_test tests/request_parser_test.cc)
+add_executable(request_handler_test tests/request_handler_test.cc)
 add_executable(reply_test tests/reply_test.cc)
 add_executable(nginx_config_test tests/nginx_config_test.cc)
 add_executable(nginx_config_parser_test tests/nginx_config_parser_test.cc)
@@ -57,6 +58,8 @@ add_executable(nginx_config_statement_test tests/nginx_config_statement_test.cc 
 add_executable(session_test tests/session_test.cc)
 add_executable(server_test tests/server_test.cc)
 target_link_libraries(request_parser_test request_parser_lib gtest_main Boost::log_setup Boost::log)
+target_link_libraries(request_handler_test request_handler_lib request_parser_lib
+  nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log)
 target_link_libraries(reply_test reply_lib gtest_main Boost::system Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_test nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_parser_test nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log)

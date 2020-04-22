@@ -19,7 +19,7 @@ tcp::socket& session::socket() {
 }
 
 reply session::echo_response() {
-  size_t content_size = strlen(data_)-2; // size of request content
+  size_t content_size = strlen(data_) - 2; // size of request content
 
   reply rep;
   rep.status = reply::ok; // set to http 200
@@ -33,7 +33,7 @@ reply session::echo_response() {
 }
 
 reply session::echo_bad_response() {
-  size_t content_size = strlen(data_)-2; // size of request content
+  size_t content_size = strlen(data_) - 2; // size of request content
 
   reply rep;
   rep.status = reply::bad_request; // set to http 400
