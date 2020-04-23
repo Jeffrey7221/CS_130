@@ -11,6 +11,7 @@
 #include "session.h"
 #include "http/request_parser.h"
 #include "http/reply.h"
+#include "logger/logger.h"
 
 using boost::asio::ip::tcp;
 
@@ -58,8 +59,8 @@ void session::start() {
 
 // based on https://www.boost.org/doc/libs/1_64_0/doc/html/boost_asio/example/cpp11/http/server/connection.cpp
 int session::handle_read(const boost::system::error_code& error, size_t bytes_transferred) {
+  Logger& logger = Logger::getInstance();
   if (!error) {
-
     bool formatted = false;
     request_parser::result_type result;
 
@@ -77,8 +78,14 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
       std::tie(result, std::ignore) = request_parser_.parse(request_, data_, data_ + strlen(data_));
     }
     
+    std::string d = data_;
+    unsigned first = d.find('\r');
+    std::string first_line = d.substr(0, first);
+    logger.logRequest(request_, socket_, NOTIFICATION);
+    logger.log("First line of request: " + first_line, NORMAL);
+
     if (result == request_parser::good) { // the URL is valid
-      
+      logger.log("OK request received.", NORMAL);
       rep = echo_response();
 
       // handle write portion
@@ -90,7 +97,7 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
       ));
       return 0;
     } else if (result == request_parser::bad) { // the URL is invalid
-      
+      logger.log("Bad request received.", NORMAL);
       rep = echo_bad_response();
 
       // handle write portion
@@ -105,19 +112,20 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
       handle_read(error,bytes_transferred);
     }
   } else {
-    BOOST_LOG_TRIVIAL(error) << "Session read error";
+    logger.log(std::string("Session read error: ") + error.message(), ERROR);
   }
   return -1;
 }
 
 int session::handle_write(const boost::system::error_code& error, size_t bytes_transferred) {
-
+  Logger& logger = Logger::getInstance();
   if (!error) {
     boost::system::error_code ignored_ec;
     socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+    logger.log("Response sent to connected session. Session now closed.", NORMAL);
     return 0;
   } else {
-    BOOST_LOG_TRIVIAL(error) << "Session write error";
+    logger.log(std::string("Session write error: ") + error.message(), ERROR);
   }
 
   return -1;

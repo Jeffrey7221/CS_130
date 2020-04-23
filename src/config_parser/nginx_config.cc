@@ -18,6 +18,7 @@
 #include "config_parser/nginx_config.h"
 #include "config_parser/nginx_config_parser.h"
 #include "config_parser/nginx_config_statement.h"
+#include "logger/logger.h"
 
 std::string NginxConfig::ToString(int depth) {
   std::string serialized_config;
@@ -58,6 +59,7 @@ std::string NginxConfig::GetConfig(std::string key) {
 
 // returns the port number in use
 short NginxConfig::GetPort(char* config_file) {
+  Logger& logger = Logger::getInstance();
   short port_num = -1;
 
   // parse out server configuration
@@ -66,7 +68,7 @@ short NginxConfig::GetPort(char* config_file) {
   try {
     port_num = std::stoi(this->GetConfig("listen"));
   } catch (std::exception& e) {
-    BOOST_LOG_TRIVIAL(error) << "Exception: " << e.what() << " (port was not a number)";
+    logger.log(std::string("Exception: ") + e.what() + " (port was not a number)", CRITICAL);
   }
 
   return port_num;

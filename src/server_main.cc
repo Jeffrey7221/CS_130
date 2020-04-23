@@ -16,35 +16,49 @@
 #include "config_parser/nginx_config.h"
 #include "config_parser/nginx_config_parser.h"
 #include "config_parser/nginx_config_statement.h"
+#include "logger/logger.h"
 
 using boost::asio::ip::tcp;
 
+void handleClose(int s) {
+  Logger& logger = Logger::getInstance();
+  logger.log("Server shut down from SIGINT", NORMAL);
+  exit(1);
+}
+
 int main(int argc, char* argv[]) {
 
-  BOOST_LOG_TRIVIAL(info) << "Starting Server";
+  Logger& logger = Logger::getInstance();
+  logger.log("Server start up", NORMAL);
+
+  // Handler to detect server shutdown
+  struct sigaction sigIntHandler;
+  sigIntHandler.sa_handler = handleClose;
+  sigemptyset(&sigIntHandler.sa_mask);
+  sigIntHandler.sa_flags = 0;
+  sigaction(SIGINT, &sigIntHandler, NULL);
 
   try {  
     if (argc != 2) {
-      BOOST_LOG_TRIVIAL(fatal) << "Usage: ./server ./nginx_config";
+      logger.log("Server started with improper arguements. Usage: ./server ./nginx_config", CRITICAL);
       return 1;
     }
 
     NginxConfig config;
     short port_num = config.GetPort(argv[1]);
     if (port_num < 0 || port_num > 65535) {
-      BOOST_LOG_TRIVIAL(fatal) << "Invalid port number in config file";
+      logger.log("Invalid port provided: " + std::to_string(port_num), CRITICAL);
       return 2;
     }
-
+    logger.log("Valid configuration received. Server initialization sequence started.", NORMAL);
     // create and run server
     boost::asio::io_service io_service;
 
     server s(io_service, port_num);
-
+    logger.log("Server initialized and listening on port: " + std::to_string(port_num), NORMAL);
     io_service.run();
   } catch (std::exception& e) {
-    BOOST_LOG_TRIVIAL(error) << "Exception: " << e.what();
+    logger.log(e.what(), ERROR);
   }
-  BOOST_LOG_TRIVIAL(info) << "Shutting Down Server";
   return 0;
 }

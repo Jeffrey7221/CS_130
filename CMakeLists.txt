@@ -42,30 +42,31 @@ add_library(reply_lib src/http/reply.cc)
 add_library(nginx_config src/config_parser/nginx_config.cc)
 add_library(nginx_config_parser src/config_parser/nginx_config_parser.cc)
 add_library(nginx_config_statement src/config_parser/nginx_config_statement.cc)
+add_library(logger_lib src/logger/logger.cc)
 
 # Update executable name, srcs, and deps
 add_executable(server src/server_main.cc)
-target_link_libraries(server server_lib session_lib request_parser_lib nginx_config nginx_config_parser nginx_config_statement 
+target_link_libraries(server server_lib session_lib request_parser_lib nginx_config nginx_config_parser nginx_config_statement logger_lib
   Boost::system Boost::filesystem Boost::regex Boost::log_setup Boost::log)
 
 # Update test executable name, srcs, and deps
 add_executable(request_parser_test tests/request_parser_test.cc)
-add_executable(request_handler_test tests/request_handler_test.cc)
+#add_executable(request_handler_test tests/request_handler_test.cc)
 add_executable(reply_test tests/reply_test.cc)
 add_executable(nginx_config_test tests/nginx_config_test.cc)
 add_executable(nginx_config_parser_test tests/nginx_config_parser_test.cc)
 add_executable(nginx_config_statement_test tests/nginx_config_statement_test.cc src/config_parser/nginx_config)
 add_executable(session_test tests/session_test.cc)
 add_executable(server_test tests/server_test.cc)
-target_link_libraries(request_parser_test request_parser_lib gtest_main Boost::log_setup Boost::log)
-target_link_libraries(request_handler_test request_handler_lib request_parser_lib
-  nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log)
+#target_link_libraries(request_handler_test request_handler_lib request_parser_lib
+#  nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log)
+target_link_libraries(request_parser_test request_parser_lib logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(reply_test reply_lib gtest_main Boost::system Boost::log_setup Boost::log)
-target_link_libraries(nginx_config_test nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log)
-target_link_libraries(nginx_config_parser_test nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log)
-target_link_libraries(nginx_config_statement_test nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log)
-target_link_libraries(session_test session_lib request_parser_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
-target_link_libraries(server_test server_lib session_lib request_parser_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
+target_link_libraries(nginx_config_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
+target_link_libraries(nginx_config_parser_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
+target_link_libraries(nginx_config_statement_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
+target_link_libraries(session_test session_lib request_parser_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
+target_link_libraries(server_test server_lib session_lib request_parser_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
 
 # Update with test binary
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)

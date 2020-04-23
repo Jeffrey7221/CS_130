@@ -18,6 +18,7 @@
 #include "config_parser/nginx_config.h"
 #include "config_parser/nginx_config_parser.h"
 #include "config_parser/nginx_config_statement.h"
+#include "logger/logger.h"
 
 
 const char* NginxConfigParser::TokenTypeAsString(TokenType type) {
@@ -119,6 +120,7 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
 
 // main parsing function for reading NginxConfig files
 bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
+  Logger& logger = Logger::getInstance();
   std::stack<NginxConfig*> config_stack;
   config_stack.push(config);
   TokenType last_token_type = TOKEN_TYPE_START;
@@ -191,16 +193,16 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
     last_token_type = token_type;
   }
 
-  BOOST_LOG_TRIVIAL(warning) << "Bad transition from "
-    << TokenTypeAsString(last_token_type) << " to " << TokenTypeAsString(token_type);
+  logger.log(std::string("Bad config file transition from ") + TokenTypeAsString(last_token_type) + " to " + TokenTypeAsString(token_type), ERROR);
   return false;
 }
 
 bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
+  Logger& logger = Logger::getInstance();
   std::ifstream config_file;
   config_file.open(file_name);
   if (!config_file.good()) {
-    BOOST_LOG_TRIVIAL(error) << "Failed to open config file: " << file_name;
+    logger.log(std::string("Failed to open config file: ") + file_name, CRITICAL);
     return false;
   }
 
