@@ -81,7 +81,7 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
     std::string d = data_;
     unsigned first = d.find('\r');
     std::string first_line = d.substr(0, first);
-    logger.logRequest(request_, socket_, NOTIFICATION);
+    try {logger.logRequest(request_, socket_, NOTIFICATION); } catch (...) {}
     logger.log("First line of request: " + first_line, NORMAL);
 
     if (result == request_parser::good) { // the URL is valid
