@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
     logger.log("Server initialized and listening on port: " + std::to_string(port_num), NORMAL);
     io_service.run();
   } catch (std::exception& e) {
-    logger.log(e.what(), ERROR);
+    logger.log("Port binding issue. Address already in use", ERROR);
   }
   return 0;
 }

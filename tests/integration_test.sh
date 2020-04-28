@@ -197,6 +197,35 @@ rm ./test_file.txt ./response_file.txt ./response_header.txt
 # rm ./response_file.jpg ./response_header.txt 
 
 
+# TEST 7 Testing for log file existence and format
+echo "GET / HTTP/1.1" > "test_file.txt"
+cat test_file.txt | nc localhost $PORT_NUM | tr -d '\r'> "response_file.txt"
+
+# test the log file exists
+LOGFILE=../logs/server_logs_0.log
+if [ -f $LOGFILE ]; then
+    echo "Log file exists"
+else
+    echo "No log file generated"
+    rm ./response_file.txt ./test_file.txt
+    kill -9 $(( $pid_server + 1 ))
+    exit 1;
+fi
+
+# test for formatting
+LINE1=$(cat $LOGFILE | grep "Server start up")
+echo "$LINE1"
+REGEX="\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}\]: \(0x\w+\): <Normal>: Server start up"
+if [[ $LINE1 =~ $REGEX ]]; then 
+    echo "Valid Log Format"
+else  
+    echo "Bad Log Format"
+    kill -9 $(( $pid_server + 1 ))
+    exit 1;
+fi
+
+# clean up test 7 files
+rm ./response_file.txt ./test_file.txt 
 
 # kill the server, clean up global files, and end the integration test
 rm ./integration_config.txt ./okay_header.txt ./bad_header.txt
