@@ -12,7 +12,7 @@ class RequestHandlerTestFix : public ::testing::Test {
 	protected:
 		void SetUp() override {
     	parser.Parse("./example_configs/example_config", &out_config);
-			parser.Parse("./example_configs/example_config2", &no_location);
+		parser.Parse("./example_configs/example_config2", &no_location);
     }
 
 		http::server::request_parser request_parser_;
@@ -22,7 +22,7 @@ class RequestHandlerTestFix : public ::testing::Test {
 
 		// configuring static root directories
 		NginxConfigParser parser;
-  	NginxConfig out_config;
+  		NginxConfig out_config;
 		NginxConfig no_location;
 
 		// comparing static file contents

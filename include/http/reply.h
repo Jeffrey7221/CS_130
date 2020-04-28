@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include <boost/asio.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include "http/header.h"
 
 namespace http {
@@ -55,7 +56,7 @@ struct reply {
   std::vector<boost::asio::const_buffer> to_buffers();
 
   // Get a stock reply.
-  static reply stock_reply(status_type status);
+  static reply* stock_reply(status_type status);
 };
 
 } // namespace server

@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
     // create and run server
     boost::asio::io_service io_service;
 
-    server s(io_service, port_num);
+    server s(io_service, config, port_num);
     logger.log("Server initialized and listening on port: " + std::to_string(port_num), NORMAL);
     io_service.run();
   } catch (std::exception& e) {

@@ -233,15 +233,20 @@ std::string to_string(reply::status_type status) {
 
 } // namespace stock_replies
 
-reply reply::stock_reply(reply::status_type status) {
-  reply rep;
-  rep.status = status;
-  rep.content = stock_replies::to_string(status);
-  rep.headers.resize(2);
-  rep.headers[0].name = "Content-Length";
-  rep.headers[0].value = std::to_string(rep.content.size());
-  rep.headers[1].name = "Content-Type";
-  rep.headers[1].value = "text/html";
+reply* reply::stock_reply(reply::status_type status) {
+
+  std::string data = stock_replies::to_string(status);
+  boost::replace_all(data, "\n", "\r\n");
+  data.append("\r\n");
+
+  reply* rep = new reply();
+  rep->status = status;
+  rep->content = data;
+  rep->headers.resize(2);
+  rep->headers[0].name = "Content-Length";
+  rep->headers[0].value = std::to_string(data.size());
+  rep->headers[1].name = "Content-Type";
+  rep->headers[1].value = "text/html";
   return rep;
 }
 

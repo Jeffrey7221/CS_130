@@ -7,12 +7,13 @@
 #include <boost/asio.hpp>
 #include "session.h"
 #include "gtest/gtest.h"
+#include "request_handler/dispatcher.h"
 
 using boost::asio::ip::tcp;
 
 class server {
   public:
-    server(boost::asio::io_service& io_service, short port);
+    server(boost::asio::io_service& io_service, const NginxConfig &config, short port);
 
     // Make our test cases a friend for access to private variables
     friend class ServerTest_HandleAcceptTest_Test;
@@ -28,6 +29,7 @@ class server {
     boost::asio::io_service& io_service_;
 
     tcp::acceptor acceptor_;
+    RequestHandlerDispatcher* dispatcher_;
 };
 
 #endif
