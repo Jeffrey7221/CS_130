@@ -1,0 +1,1 @@
+test that static text files are supported by our web server
