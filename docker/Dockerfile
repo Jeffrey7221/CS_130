@@ -16,9 +16,12 @@ RUN ctest --output-on_failure
 # Define deploy stage
 FROM ubuntu:bionic as deploy
 
+WORKDIR /app/build
+
 # Copy server output binary to "."
 COPY --from=builder /usr/src/project/build/bin/server .
 COPY --from=builder /usr/src/project/config/nginx_config .
+COPY --from=builder /usr/src/project/data/ ../data/
 
 # Expose some port(s)
 EXPOSE 80

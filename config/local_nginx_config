@@ -1,7 +1,7 @@
 # Format of config file we use for our webserver
 
 server {
-  listen 80;
+  listen 8080;
   server_name foo.com;
   static handler {
     location /;
