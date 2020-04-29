@@ -44,7 +44,7 @@ class session {
     friend class SessionTestFix_StartTest_Test;
 
     enum { max_length = 1024 };
-    char data_[max_length];
+    char data_[1024];
 
   private:
 
@@ -69,6 +69,8 @@ class session {
 
     // The reply to be sent back to the client.
     std::shared_ptr<reply> rep;
+
+    std::shared_ptr<RequestHandler> handler;
 
     RequestHandlerDispatcher* dispatcher_;
 };

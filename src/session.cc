@@ -61,7 +61,7 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
       logger.log("OK request received.", NORMAL);
 
       // get request handler
-      std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+      handler = dispatcher_->dispatch(request_);
 
       if (handler == NULL) {
         rep = std::shared_ptr<reply>(reply::stock_reply(reply::not_found));

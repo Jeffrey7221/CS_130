@@ -58,8 +58,8 @@ add_executable(reply_test tests/reply_test.cc)
 add_executable(nginx_config_test tests/nginx_config_test.cc)
 add_executable(nginx_config_parser_test tests/nginx_config_parser_test.cc)
 add_executable(nginx_config_statement_test tests/nginx_config_statement_test.cc src/config_parser/nginx_config)
-# add_executable(session_test tests/session_test.cc)
-# add_executable(server_test tests/server_test.cc)
+add_executable(session_test tests/session_test.cc)
+add_executable(server_test tests/server_test.cc)
 add_executable(logger_test tests/logger_test.cc)
 target_link_libraries(request_parser_test request_parser_lib logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(request_handler_test request_handler_lib request_parser_lib logger_lib
@@ -68,8 +68,8 @@ target_link_libraries(reply_test reply_lib logger_lib gtest_main Boost::system B
 target_link_libraries(nginx_config_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_parser_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_statement_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
-# target_link_libraries(session_test session_lib request_parser_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
-# target_link_libraries(server_test server_lib session_lib request_parser_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
+target_link_libraries(session_test session_lib request_parser_lib nginx_config request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
+target_link_libraries(server_test server_lib session_lib request_parser_lib nginx_config request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
 target_link_libraries(logger_test logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
 
 # Update with test binary
@@ -79,8 +79,8 @@ gtest_discover_tests(nginx_config_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_
 gtest_discover_tests(nginx_config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(nginx_config_statement_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-# gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-# gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(logger_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Update with target/test targets

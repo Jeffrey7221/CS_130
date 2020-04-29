@@ -13,7 +13,7 @@
 class RequestHandlerDispatcher {
     public:
 	    RequestHandlerDispatcher(const NginxConfig& config); 
-        std::shared_ptr<RequestHandler> dispatch(request& req);
+        virtual std::shared_ptr<RequestHandler> dispatch(request& req);
 
     private:
         void createHandler(const NginxConfig& config, std::string HandlerType);

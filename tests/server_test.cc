@@ -3,6 +3,8 @@
 #include "session.h"
 #include "gmock/gmock.h"
 #include "server.h"
+#include "request_handler/dispatcher.h"
+#include "request_handler/request_handler.h"
 #include <boost/asio.hpp>
 #include <stdio.h>
 
@@ -15,7 +17,7 @@ using ::testing::_;
 class MockSession : public session {
     public:
         boost::asio::io_service& io_service;
-        MockSession(boost::asio::io_service& m_io_service) : session(m_io_service), io_service(m_io_service) {}
+        MockSession(boost::asio::io_service& m_io_service, RequestHandlerDispatcher* m_dispatcher) : session(m_io_service, m_dispatcher), io_service(m_io_service) {}
         MOCK_METHOD0(start, void());
 };
 
@@ -29,9 +31,11 @@ class MockIOService : public boost::asio::io_service {
 // Test that Handle Accept properly starts a new session
 TEST(ServerTest, HandleAcceptTest){
     MockIOService m_io_service;
-    MockSession m_session(m_io_service);
+    RequestHandlerDispatcher* m_dispatcher;
+    MockSession m_session(m_io_service, m_dispatcher);
     EXPECT_CALL(m_session, start()).Times(AtLeast(1));
     short port = 8080;
-    server m_server(m_session.io_service, port);
+    NginxConfig config;
+    server m_server(m_session.io_service, config, port);
     m_server.handle_accept(&m_session, boost::system::error_code());
 }

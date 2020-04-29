@@ -4,54 +4,32 @@
 #include "http/reply.h"
 #include "http/request_parser.h"
 #include "http/request.h"
+#include "request_handler/dispatcher.h"
+#include "request_handler/request_handler.h"
 #include <tuple>
+#include <string.h>
 
 using ::testing::_;
 using ::testing::AtLeast;
 
-class SessionTestFix : public :: testing::Test {
-    protected:
-        boost::asio::io_service io_service;
-        session* sesh = new session(io_service);
+// A mock of the dispatcher class that handles whether we are looking for static or echo handler
+class MockDispatcher : public RequestHandlerDispatcher {
+    public:
+        MockDispatcher(NginxConfig& config) : RequestHandlerDispatcher(config) {}
+        MOCK_METHOD1(dispatch, std::shared_ptr<RequestHandler>(request& req));
 };
 
-// Test the echo response for proper inputs
-TEST_F(SessionTestFix, EchoResponseTest) {
-    char incoming_request[1024] = "GET / HTTP/1.1\r\nHost: www.w3.org/pub/WWW/TheProject.html\r\n\r\n";
-    strcpy(sesh->data_, incoming_request);
-    reply r = sesh->echo_response();
-    EXPECT_TRUE(r.status == reply::ok);
-
-    for (int i = 0; i < r.headers.size(); i++){
-        if (r.headers[i].name == "Content-Length"){
-            EXPECT_TRUE(r.headers[i].value == std::to_string(strlen(incoming_request)-2));
+class SessionTestFix : public :: testing::Test {
+    protected:
+        session* sesh;
+        MockDispatcher* m_dispatcher;
+        boost::asio::io_service io_service;
+        void SetUp() override {
+            NginxConfig config;
+            m_dispatcher = new MockDispatcher(config);
+            sesh = new session(io_service, m_dispatcher);
         }
-        if (r.headers[i].name == "Content-Type"){
-            EXPECT_TRUE(r.headers[i].value == "text/plain");
-        }
-    }
-
-    EXPECT_TRUE(std::string(incoming_request, strlen(incoming_request)-2) == r.content);
-}
-
-// Test the echo response for bad inputs
-TEST_F(SessionTestFix, EchoBadResponseTest) {
-    char incoming_request[1024] = "BAD RESPONSE";
-    strcpy(sesh->data_, incoming_request);
-    reply r = sesh->echo_bad_response();
-    EXPECT_TRUE(r.status == reply::bad_request);
-
-    for (int i = 0; i < r.headers.size(); i++){
-        if (r.headers[i].name == "Content-Length"){
-            EXPECT_TRUE(r.headers[i].value == std::to_string(strlen(incoming_request)-2));
-        }
-        if (r.headers[i].name == "Content-Type"){
-            EXPECT_TRUE(r.headers[i].value == "text/plain");
-        }
-    }
-
-    EXPECT_TRUE(std::string(incoming_request, strlen(incoming_request)-2) == r.content);
-}
+};
 
 // Test that the session stops when a bad error code is set
 TEST_F(SessionTestFix, ErrorCodeTest) {
