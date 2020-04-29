@@ -5,13 +5,17 @@ foo "bar";
 server {
   listen 8080;
 
-  # DELETE THIS COMMENT: configure static_handler root directory for tests
-  # DELETE THIS COMMENT: http://nginx.org/en/docs/http/ngx_http_core_module.html#location
-  location /static/ {
-    root tests/static_data;
+  static handler {
+    location /static/;
+    root /tests/static_data;
   }
 
-  location /static_2/ {
-    root tests/example_configs;
+  static handler {
+    location /static_2/;
+    root /tests/example_configs;
+  }
+
+  echo handler {
+    location /echo/;
   }
 }
