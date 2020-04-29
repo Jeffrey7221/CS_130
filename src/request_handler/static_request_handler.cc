@@ -53,19 +53,24 @@ std::shared_ptr<reply> StaticRequestHandler::HandleRequest(const request& reques
     while (f.get(c)) content_ += c;
     f.close();
 
-    // formatting new lines properly
-    boost::replace_all(content_, "\n", "\r\n");
-    content_.append("\r\n");
+
+
+
 
     // create HTTP reply with the file contents as the reply body
     std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());
     rep->status = reply::ok; // set to http 200
-    rep->content = content_;
     rep->headers.resize(2);
     rep->headers[0].name = "Content-Length";
-    rep->headers[0].value = std::to_string(content_.length());
     rep->headers[1].name = "Content-Type";
     rep->headers[1].value = setContentType(new_uri); 
+    // formatting new lines properly for text
+    if (rep->headers[1].value == "text/html" || rep->headers[1].value == "text/plain") {
+        boost::replace_all(content_, "\n", "\r\n");
+        content_.append("\r\n");
+    }
+    rep->content = content_;
+    rep->headers[0].value = std::to_string(content_.length());
 
     return rep;
 }

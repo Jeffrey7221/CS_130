@@ -76,13 +76,13 @@ TEST_F(RequestHandlerTestFix, GoodStaticHandle) {
   reply_ = static_handler_.HandleRequest(request_, incoming_request);
 
 	// compare file contents
-  file.open("./static_data/example_data.txt");
-  while (file.get(chr)) {
+	file.open("./static_data/example_data.txt");
+	while (file.get(chr)) {
 		file_body += chr;
 	}
 	file_body.pop_back();
 	file_body += "\r\n\r\n";
-  file.close();
+  	file.close();
 
 	EXPECT_EQ(reply_->status, http::server::reply::ok);
 	EXPECT_EQ(reply_->content, file_body);
@@ -108,7 +108,8 @@ TEST_F(RequestHandlerTestFix, StaticHandleNoConfig) {
 		file_body += chr;
 	}
 	file_body.pop_back();
-	file_body += "\r\n\r\n";  file.close();
+	file_body += "\r\n\r\n";  
+	file.close();
 
 	EXPECT_EQ(reply_->status, http::server::reply::ok);
 	EXPECT_EQ(reply_->content, file_body);
@@ -132,7 +133,7 @@ TEST_F(RequestHandlerTestFix, DifferentStaticRoute) {
   while (file.get(chr)) {
 		file_body += chr;
 	}
-	file_body += "\r\n";
+	//file_body += "\r\n";
   file.close();
 
 	EXPECT_EQ(reply_->status, http::server::reply::ok);
