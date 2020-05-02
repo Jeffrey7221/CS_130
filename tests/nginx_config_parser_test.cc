@@ -86,3 +86,15 @@ TEST_F(FileParseTestFixture, ExtraSemicolon) {
   bool failure = parser.Parse("./example_configs/example_config12", &out_config);
   EXPECT_FALSE(failure);
 }
+
+// test unable to open file
+TEST_F(FileParseTestFixture, UnableToBeOpen) {
+  bool failure = parser.Parse("example_config.zip", &out_config);
+  EXPECT_FALSE(failure);
+}
+
+// test Unknown Token
+TEST_F(FileParseTestFixture, UnknownToken) {
+  bool failure = parser.Parse("example_config13", &out_config);
+  EXPECT_FALSE(failure);
+}
