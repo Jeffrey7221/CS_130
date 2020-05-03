@@ -4,6 +4,7 @@
 #include "request_handler/request_handler.h"
 #include "config_parser/nginx_config.h"
 #include "config_parser/nginx_config_statement.h"
+#include "gtest/gtest.h"
 
 /* Header class for our Request Handler Dispatcher
     Created: in server.cc when config file is read in
@@ -15,7 +16,9 @@ class RequestHandlerDispatcher {
 	    RequestHandlerDispatcher(const NginxConfig& config); 
         virtual std::shared_ptr<RequestHandler> dispatch(request& req);
 
-    private:
+        // Make our test cases a friend for access to private variables
+        friend class DispatcherTestFix_HandlerProperCreation_Test;
+    private: 
         void createHandler(const NginxConfig& config, std::string HandlerType);
 
         // private variables
