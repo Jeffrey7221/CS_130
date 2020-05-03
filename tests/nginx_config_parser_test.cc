@@ -98,3 +98,27 @@ TEST_F(FileParseTestFixture, UnknownToken) {
   bool failure = parser.Parse("example_config13", &out_config);
   EXPECT_FALSE(failure);
 }
+
+// test singlequote success
+TEST_F(FileParseTestFixture, singleQuote) {
+  bool success = parser.Parse("./example_configs/example_config14", &out_config);
+  EXPECT_TRUE(success);
+}
+
+// test tab 
+TEST_F(FileParseTestFixture, TabTest) {
+  bool success = parser.Parse("./example_configs/example_config15", &out_config);
+  EXPECT_TRUE(success);
+}
+
+// test newline 
+TEST_F(FileParseTestFixture, NewlineTest) {
+  bool success = parser.Parse("./example_configs/example_config16", &out_config);
+  EXPECT_TRUE(success);
+}
+
+// test carriage return 
+TEST_F(FileParseTestFixture, CarriageReturn) {
+  bool success = parser.Parse("./example_configs/example_config17", &out_config);
+  EXPECT_TRUE(success);
+}

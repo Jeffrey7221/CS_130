@@ -1,0 +1,5 @@
+# Test for Tab Expect Success
+\t start server {
+  http 192.23.134.3;
+  listen 9000;
+}

@@ -1,0 +1,7 @@
+# Test for newline
+
+start server {
+\n
+  http 192.23.134.3;
+  listen 9000;
+}
