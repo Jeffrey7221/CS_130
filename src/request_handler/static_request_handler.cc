@@ -33,6 +33,7 @@ std::shared_ptr<reply> StaticRequestHandler::HandleRequest(const request& reques
     new_uri.replace(0, location_path_.size(), root_);
     new_uri.replace(0, 1, "../");
 
+    logger.log("Looking for static file: " + new_uri, NORMAL);
     // if requested file is not found, return a "404 Not Found" error
     boost::filesystem::path boost_path(new_uri);
     if (!boost::filesystem::exists(new_uri) || !boost::filesystem::is_regular_file(new_uri)) {
@@ -53,9 +54,7 @@ std::shared_ptr<reply> StaticRequestHandler::HandleRequest(const request& reques
     while (f.get(c)) content_ += c;
     f.close();
 
-
-
-
+    logger.log("Static file has been found and read, constructing HTTP reply", NORMAL);
 
     // create HTTP reply with the file contents as the reply body
     std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());

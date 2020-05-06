@@ -9,6 +9,7 @@ RequestHandler* EchoRequestHandler::create(const NginxConfig& config, const std:
 std::shared_ptr<reply> EchoRequestHandler::HandleRequest(const request& request_, char data_[1024]) {
     Logger& logger = Logger::getInstance();
 
+    logger.log("Constructing HTTP reply for an echo request", NORMAL);
     size_t content_size = strlen(data_) - 2; // size of request content
     std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());
     rep->status = reply::ok; // set to http 200
