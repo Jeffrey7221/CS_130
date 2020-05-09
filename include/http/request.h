@@ -21,11 +21,24 @@ namespace server {
 
 // A request received from a client.
 struct request {
+
+  // The HTML method (GET, PUT, POST, etc)
   std::string method;
+
+  // The path of the request
   std::string uri;
+
+  // A map of header objects (name, value)
+  std::vector<header> headers;
+
+  // The content of the request
+  std::string body_;
+
+  // Entire request recieved
+  std::string data_;
+
   int http_version_major;
   int http_version_minor;
-  std::vector<header> headers;
 };
 
 } // namespace server

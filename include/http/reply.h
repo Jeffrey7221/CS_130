@@ -24,7 +24,7 @@ namespace server {
 // a reply to be sent to a client
 struct reply {
 
-  // the status of the reply
+  // An HTML code indicating success/failure of processing
   enum status_type {
     ok = 200,
     created = 201,
@@ -44,10 +44,10 @@ struct reply {
     service_unavailable = 503
   } status;
 
-  // the headers to be included in the reply
+  // A map of header objects (name, value)
   std::vector<header> headers;
 
-  // the content to be sent in the reply
+  // The content of the response
   std::string content;
 
   // Convert the reply into a vector of buffers. The buffers do not own the

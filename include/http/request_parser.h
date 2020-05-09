@@ -13,6 +13,7 @@
 #define HTTP_REQUEST_PARSER_H
 
 #include <tuple>
+#include "request.h"
 
 namespace http {
 namespace server {
@@ -38,9 +39,13 @@ class request_parser {
     template <typename InputIterator>
       std::tuple<result_type, InputIterator> parse(request& req,
       InputIterator begin, InputIterator end) {
+      
+      req.data_ = begin;
+
       while (begin != end) {
         result_type result = consume(req, *begin++);
         if (result == good || result == bad) {
+          req.body_ = begin;
           return std::make_tuple(result, begin);
         }
       }
