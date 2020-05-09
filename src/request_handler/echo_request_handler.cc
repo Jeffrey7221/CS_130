@@ -1,13 +1,13 @@
 #include "request_handler/echo_request_handler.h"
 #include "logger/logger.h"
 
-RequestHandler* EchoRequestHandler::create(const NginxConfig& config, const std::string location_path) {
+RequestHandler* EchoRequestHandler::Init(const NginxConfig& config) {
     return new EchoRequestHandler();
 }
 
 // creates HTTP reply for all incoming echo requests
 std::shared_ptr<reply> EchoRequestHandler::HandleRequest(const request& request_, char data_[1024]) {
-    Logger& logger = Logger::getInstance();
+    Logger& logger = Logger::getInstance(); 
 
     logger.log("Constructing HTTP reply for an echo request", NORMAL);
     size_t content_size = strlen(data_) - 2; // size of request content

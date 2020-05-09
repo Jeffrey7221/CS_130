@@ -9,7 +9,7 @@ using http::server::reply;
 
 class EchoRequestHandler : public RequestHandler {
     public:
-        static RequestHandler* create(const NginxConfig& config, const std::string location_path);
+        static RequestHandler* Init(const NginxConfig& config);
 
             // derived from base class RequestHandler
         std::shared_ptr<http::server::reply> HandleRequest(const request& request_, char data_[1024]) override;  

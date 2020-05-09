@@ -13,7 +13,7 @@ using http::server::reply;
 class StaticRequestHandler : public RequestHandler {
     public:
         StaticRequestHandler(const NginxConfig& config, const std::string location_path, const std::string root);
-        static RequestHandler* create(const NginxConfig& config, const std::string location_path);
+        static RequestHandler* Init(const NginxConfig& config, const std::string location_path);
 
             // derived from base class RequestHandler
         std::shared_ptr<reply> HandleRequest(const request& request_, char data_[1024]) override;  

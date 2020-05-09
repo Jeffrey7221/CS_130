@@ -7,7 +7,7 @@ StaticRequestHandler::StaticRequestHandler(const NginxConfig& config, const std:
             config_(config), location_path_(location_path), root_(root) {}
 
 // Create new static request handler from config file statement
-RequestHandler* StaticRequestHandler::create(const NginxConfig& config, const std::string location_path) {
+RequestHandler* StaticRequestHandler::Init(const NginxConfig& config, const std::string location_path) {
 
     // find corresponding root path for static request handler
     std::string root = "/";
