@@ -3,15 +3,15 @@
 server {
   root { 
     http 192.23.134.3;
-    listen 1024;
-    listen 1023;
+    port 1024;
+    port 1023;
   }
 }
 
 server {
   root { 
     http 192.23.134.3;
-    listen 0;
+    port 0;
   }
 
   path {

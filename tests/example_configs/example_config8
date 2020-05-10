@@ -2,5 +2,5 @@
 
 start server {
   http 192.23.134.3;
-  listen 9000;
+  port 9000;
 }

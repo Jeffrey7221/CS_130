@@ -53,7 +53,6 @@ std::string NginxConfig::GetConfig(std::string key) {
       }
     }
   }
-  
   return "";
 }
 
@@ -66,7 +65,7 @@ short NginxConfig::GetPort(char* config_file) {
   config_parser->Parse(config_file, this);
 
   try {
-    port_num = std::stoi(this->GetConfig("listen"));
+    port_num = std::stoi(this->GetConfig("port"));
   } catch (std::exception& e) {
     logger.log(std::string("Exception: ") + e.what() + " (port was not a number)", CRITICAL);
   }

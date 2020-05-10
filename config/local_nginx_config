@@ -1,19 +1,16 @@
 # Format of config file we use for our webserver
 
 server {
-  listen 8080;
+  port 8080;
   server_name foo.com;
-  static handler {
-    location /;
+  location "/" StaticHandler {
     root /data;
   }
 
-  static handler {
-    location /images/;
+  location "/static" StaticHandler {
     root /data;
   }
 
-  echo handler {
-    location /echo/;
+  location "/echo" EchoHandler {
   }
 }

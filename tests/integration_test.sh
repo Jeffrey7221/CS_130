@@ -6,18 +6,16 @@
 PORT_NUM=9000
 echo "
 server {
-  listen 9000;
-  static handler {
-    location /static/;
+  port 9000;
+  location \"/static\" StaticHandler {
     root /tests/static_data;
   }
-  echo handler {
-    location /echo/;
+  location \"/echo\" EchoHandler {
   }
 }
 " > "integration_config.txt"
 
-./bin/server ./integration_config.txt &
+../build/bin/server ./integration_config.txt &
 pid_server=$$
 
 # initializing expected header responses

@@ -19,7 +19,7 @@ class RequestHandlerDispatcher {
         // Make our test cases a friend for access to private variables
         friend class DispatcherTestFix_HandlerProperCreation_Test;
     private: 
-        void createHandler(const NginxConfig& config, std::string HandlerType);
+        void createHandler(const std::shared_ptr<NginxConfigStatement> config_statement_, std::string HandlerType);
 
         // private variables
         std::map<std::string, std::shared_ptr<RequestHandler>> handlers_;

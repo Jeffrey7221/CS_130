@@ -3,19 +3,16 @@
 foo "bar";
 
 server {
-  listen 8080;
-
-  static handler {
-    location /static/;
-    root /tests/static_data;
+  port 8080;
+  
+  location "/static_2" StaticHandler {
+    root /data;
   }
 
-  static handler {
-    location /static_2/;
-    root /tests/example_configs;
+  location "/static" StaticHandler {
+    root /data;
   }
 
-  echo handler {
-    location /echo/;
+  location "/echo" EchoHandler {
   }
 }
