@@ -7,7 +7,7 @@
 StatusRequestHandler::StatusRequestHandler(const NginxConfig &config):
 request_handler_info(""), request_info(""),display_content("") {}
 
-RequestHandler* StatusRequestHandler::create(const NginxConfig& config, const std::string location_path){
+RequestHandler* StatusRequestHandler::Init(const NginxConfig& config){
 	return new StatusRequestHandler(config);
 }
 

@@ -9,7 +9,7 @@ class StatusRequestHandler : public RequestHandler  {
 public:
 	StatusRequestHandler(const NginxConfig &config);
 
-	static RequestHandler* create(const NginxConfig& config, const std::string location_path);
+	static RequestHandler* Init(const NginxConfig& config);
 
 	std::shared_ptr<reply> HandleRequest(const request& request_) override;  
 

@@ -18,7 +18,7 @@ RequestHandlerDispatcher::RequestHandlerDispatcher(const NginxConfig& config): c
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "echo");
                     } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StaticHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "static");
-                    }else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StatusRequestHandler") {
+                    }else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StatusHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "status");
                     }
                 }
@@ -93,7 +93,7 @@ void RequestHandlerDispatcher::createHandler(const std::shared_ptr<NginxConfigSt
         num_handlers++;
     } else if (HandlerType == "status") {
         logger.log("Adding an status handler at path: " + path_uri, NORMAL);
-        handlers_[path_uri] = std::shared_ptr<RequestHandler>(StatusRequestHandler::create(*(config_statement_->child_block_), path_uri));
+        handlers_[path_uri] = std::shared_ptr<RequestHandler>(StatusRequestHandler::Init(*(config_statement_->child_block_)));
         request_handler_uri[path_uri] = "status handler";
         num_handlers++;
     } else {

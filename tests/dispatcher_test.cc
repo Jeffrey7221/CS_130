@@ -6,6 +6,7 @@
 #include "request_handler/request_handler.h"
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/static_request_handler.h"
+#include "request_handler/status_handler.h"
 #include "request_handler/dispatcher.h"
 #include "http/request_parser.h"
 #include "http/request.h"
@@ -40,7 +41,8 @@ TEST_F(DispatcherTestFix, HandlerProperCreation) {
     EXPECT_EQ(dispatcher_->handlers_.count("/echo"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/static"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/static_2"), 1);
-    EXPECT_EQ(dispatcher_->handlers_.size(), 3);
+    EXPECT_EQ(dispatcher_->handlers_.count("/status"), 1);
+    EXPECT_EQ(dispatcher_->handlers_.size(), 4);
 }
 
 // testing dispatcher return for echo handler
@@ -55,6 +57,13 @@ TEST_F(DispatcherTestFix, ProperEchoHandlerReturn) {
 TEST_F(DispatcherTestFix, ProperStaticHandlerReturn) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
     request_.uri = "/static";
+    std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+    EXPECT_TRUE(handler != NULL);
+}
+
+TEST_F(DispatcherTestFix, ProperStatusHandlerReturn) {
+    RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
+    request_.uri = "/status";
     std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
     EXPECT_TRUE(handler != NULL);
 }
