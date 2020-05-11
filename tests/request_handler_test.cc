@@ -41,7 +41,7 @@ TEST_F(RequestHandlerTestFix, BasicEcho) {
 
   std::tie(request_parser_result_, std::ignore) =
 	  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
-  reply_ = echo_handler_.HandleRequest(request_, incoming_request);
+  reply_ = echo_handler_.HandleRequest(request_);
 
 	EXPECT_EQ(reply_->status, http::server::reply::ok);
 	EXPECT_EQ(reply_->content, "GET /echo HTTP/1.1\r\n");
@@ -56,7 +56,7 @@ TEST_F(RequestHandlerTestFix, EchoPost) {
 
   std::tie(request_parser_result_, std::ignore) =
 	  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
-  reply_ = echo_handler_.HandleRequest(request_, incoming_request);
+  reply_ = echo_handler_.HandleRequest(request_);
 
 	EXPECT_EQ(reply_->status, http::server::reply::ok);
 	EXPECT_EQ(reply_->content, "POST / HTTP/1.1\r\nHost: www.w3.org/pub/WWW/TheProject.html\r\n");
@@ -73,7 +73,7 @@ TEST_F(RequestHandlerTestFix, GoodStaticHandle) {
 
   std::tie(request_parser_result_, std::ignore) =
 	  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
-  reply_ = static_handler_.HandleRequest(request_, incoming_request);
+  reply_ = static_handler_.HandleRequest(request_);
 
 	// compare file contents
 	file.open("./static_data/example_data.txt");
@@ -100,7 +100,7 @@ TEST_F(RequestHandlerTestFix, StaticHandleNoConfig) {
 
   std::tie(request_parser_result_, std::ignore) =
 	  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
-  reply_ = static_handler_.HandleRequest(request_, incoming_request);
+  reply_ = static_handler_.HandleRequest(request_);
 
 	// compare file contents
   file.open("./static_data/example_data.txt");
@@ -126,7 +126,7 @@ TEST_F(RequestHandlerTestFix, DifferentStaticRoute) {
 
   std::tie(request_parser_result_, std::ignore) =
 	  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
-  reply_ = static_handler_.HandleRequest(request_, incoming_request);
+  reply_ = static_handler_.HandleRequest(request_);
 
 	// compare file contents
   file.open("./example_configs/example_config2");
@@ -151,7 +151,7 @@ TEST_F(RequestHandlerTestFix, StaticFileNotFound) {
   char input[1024] = "GET /static/data/www/data1.data HTTP/1.1\r\nHost: www.example.com\r\nConnection: close\r\n\r\n";
   std::tie(request_parser_result_, std::ignore) =
 	  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
-  reply_ = static_handler_.HandleRequest(request_, incoming_request);
+  reply_ = static_handler_.HandleRequest(request_);
 
 	EXPECT_EQ(reply_->status, http::server::reply::not_found);
 	EXPECT_EQ(reply_->content, "<html>"

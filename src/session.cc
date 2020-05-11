@@ -27,7 +27,6 @@ void session::start() {
     boost::asio::placeholders::error,
     boost::asio::placeholders::bytes_transferred));
   
-
 }
 
 // based on https://www.boost.org/doc/libs/1_64_0/doc/html/boost_asio/example/cpp11/http/server/connection.cpp
@@ -54,7 +53,8 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
     std::string d = data_;
     unsigned first = d.find('\r');
     std::string first_line = d.substr(0, first);
-    try {logger.logRequest(request_, socket_, NOTIFICATION); } catch (...) {}
+    
+    try { logger.logRequest(request_, socket_, NOTIFICATION); } catch (...) {}
     logger.log("First line of request: " + first_line, NORMAL);
 
     if (result == request_parser::good) { // the URL is valid
@@ -67,7 +67,7 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
         rep = std::shared_ptr<reply>(reply::stock_reply(reply::not_found));
       } else {
         // use request handler to create HTTP reply
-        rep = handler->HandleRequest(request_, data_);
+        rep = handler->HandleRequest(request_);
       }
 
       // handle write portion

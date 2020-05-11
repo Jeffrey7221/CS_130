@@ -12,7 +12,7 @@ class EchoRequestHandler : public RequestHandler {
         static RequestHandler* Init(const NginxConfig& config);
 
             // derived from base class RequestHandler
-        std::shared_ptr<http::server::reply> HandleRequest(const request& request_, char data_[1024]) override;  
+        std::shared_ptr<http::server::reply> HandleRequest(const request& request_) override;  
 };
 
 #endif
