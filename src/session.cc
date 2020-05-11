@@ -12,8 +12,11 @@
 #include "http/request_parser.h"
 #include "http/reply.h"
 #include "logger/logger.h"
+#include "request_handler/dispatcher.h"
 
 using boost::asio::ip::tcp;
+
+
 
 tcp::socket& session::socket() {
   return socket_;
@@ -69,6 +72,9 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
         // use request handler to create HTTP reply
         rep = handler->HandleRequest(request_);
       }
+      
+      //map this url to a response code for status Request Handler
+      RequestHandlerDispatcher::request_code_received_[request_.uri].push_back(rep->status);
 
       // handle write portion
       boost::asio::async_write(socket_,rep->to_buffers(),
@@ -81,6 +87,9 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
     } else if (result == request_parser::bad) { // the URL is invalid
       logger.log("Bad request received.", NORMAL);
       rep = std::shared_ptr<reply>(reply::stock_reply(reply::bad_request));
+
+      //map this url to a response code for status Request Handler
+      RequestHandlerDispatcher::request_code_received_[request_.uri].push_back(rep->status);
       // handle write portion
       boost::asio::async_write(socket_,rep->to_buffers(),
       boost::bind(
@@ -111,3 +120,4 @@ int session::handle_write(const boost::system::error_code& error, size_t bytes_t
 
   return -1;
 }
+

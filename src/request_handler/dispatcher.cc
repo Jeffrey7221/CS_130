@@ -1,6 +1,7 @@
 #include "request_handler/dispatcher.h"
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/static_request_handler.h"
+#include "request_handler/status_handler.h"
 #include "logger/logger.h"
 
 // Constructor for RequestHandlerDispatcher
@@ -8,7 +9,6 @@
 RequestHandlerDispatcher::RequestHandlerDispatcher(const NginxConfig& config): config_(config) {
     Logger& logger = Logger::getInstance();
     logger.log("Creating request handlers based on config files", NORMAL);
-    size_t num_created = 0;
 
     for(int i = 0; i < config_.statements_.size(); i++) {
         if(config_.statements_[i]->tokens_[0] == "server" && config_.statements_[i]->tokens_.size() == 1) {
@@ -18,6 +18,8 @@ RequestHandlerDispatcher::RequestHandlerDispatcher(const NginxConfig& config): c
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "echo");
                     } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StaticHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "static");
+                    }else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StatusRequestHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "status");
                     }
                 }
             }
@@ -82,12 +84,24 @@ void RequestHandlerDispatcher::createHandler(const std::shared_ptr<NginxConfigSt
     if(HandlerType == "echo") {
         logger.log("Adding an echo handler at path: " + path_uri, NORMAL);
         handlers_[path_uri] = std::shared_ptr<RequestHandler>(EchoRequestHandler::Init(*(config_statement_->child_block_)));
+        request_handler_uri[path_uri] = "echo handler";
         num_handlers++;
     } else if (HandlerType == "static") {
         logger.log("Adding an static handler at path: " + path_uri, NORMAL);
         handlers_[path_uri] = std::shared_ptr<RequestHandler>(StaticRequestHandler::Init(*(config_statement_->child_block_), path_uri));
+        request_handler_uri[path_uri] = "static handler";
+        num_handlers++;
+    } else if (HandlerType == "status") {
+        logger.log("Adding an status handler at path: " + path_uri, NORMAL);
+        handlers_[path_uri] = std::shared_ptr<RequestHandler>(StatusRequestHandler::create(*(config_statement_->child_block_), path_uri));
+        request_handler_uri[path_uri] = "status handler";
         num_handlers++;
     } else {
         return;
     }
 }
+
+
+size_t RequestHandlerDispatcher::num_handlers = 0;
+std::map<std::string, std::vector<int>> RequestHandlerDispatcher::request_code_received_;
+std::map<std::string, std::string> RequestHandlerDispatcher::request_handler_uri;

@@ -18,13 +18,17 @@ class RequestHandlerDispatcher {
 
         // Make our test cases a friend for access to private variables
         friend class DispatcherTestFix_HandlerProperCreation_Test;
+
+        static std::map<std::string, std::string> request_handler_uri; //store mappings of handler prefix with the resulting type of handler
+        static std::map<std::string, std::vector<int>> request_code_received_; // this ideally should go in session, but due to undefined reference errors, I cannot fix this. So TODO is move this variable into session
+        static size_t num_handlers; //make variable static so status_hanlder can access it
     private: 
         void createHandler(const std::shared_ptr<NginxConfigStatement> config_statement_, std::string HandlerType);
 
         // private variables
         std::map<std::string, std::shared_ptr<RequestHandler>> handlers_;
         NginxConfig config_;
-        size_t num_handlers;
+        
 
 };
 

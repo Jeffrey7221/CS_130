@@ -11,6 +11,9 @@ server {
     root /data;
   }
 
+  location "/status" StatusHandler {
+  }
+
   location "/echo" EchoHandler {
   }
 }

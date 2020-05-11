@@ -43,8 +43,10 @@ class session {
     friend class SessionTestFix_CloseSocketTest_Test;
     friend class SessionTestFix_StartTest_Test;
 
+
     enum { max_length = 1024 };
     char data_[1024];
+
 
   private:
 
@@ -73,6 +75,7 @@ class session {
     std::shared_ptr<RequestHandler> handler;
 
     RequestHandlerDispatcher* dispatcher_;
+
 };
 
 #endif

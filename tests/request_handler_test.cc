@@ -6,6 +6,7 @@
 #include "request_handler/request_handler.h"
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/static_request_handler.h"
+#include "request_handler/status_handler.h"
 #include "http/request_parser.h"
 #include "http/request.h"
 #include "http/reply.h"
@@ -24,7 +25,7 @@ class RequestHandlerTestFix : public ::testing::Test {
 		std::shared_ptr<http::server::reply> reply_;
 		// configuring static root directories
 		NginxConfigParser parser;
-  	NginxConfig out_config;
+  		NginxConfig out_config;
 		NginxConfig no_location;
 
 		// comparing static file contents
@@ -162,3 +163,32 @@ TEST_F(RequestHandlerTestFix, StaticFileNotFound) {
 	EXPECT_EQ(reply_->headers[0].value, std::to_string(reply_->content.size()));
 }
 
+
+TEST_F(RequestHandlerTestFix, StatusHandler) {
+
+	char incoming_request[1024] = "GET /index.html HTTP/1.1\r\n\r\n";
+	char incoming_request_status[1024] = "GET /status HTTP/1.1\r\n\r\n";
+	std::string static_path = "/static/";
+	std::string static_root = "/tests/static_data/";
+	StaticRequestHandler static_handler_(out_config, static_path, static_root);
+	StatusRequestHandler status_handler_(out_config);
+
+	std::tie(request_parser_result_, std::ignore) =
+	request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = static_handler_.HandleRequest(request_);
+
+	std::tie(request_parser_result_, std::ignore) =
+	request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = static_handler_.HandleRequest(request_);
+
+	std::tie(request_parser_result_, std::ignore) =
+	request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = static_handler_.HandleRequest(request_);
+
+	std::tie(request_parser_result_, std::ignore) =
+	request_parser_.parse(request_, incoming_request_status, incoming_request_status + strlen(incoming_request_status));
+	reply_ = status_handler_.HandleRequest(request_);
+
+	EXPECT_EQ(reply_->status, http::server::reply::ok);
+	EXPECT_EQ(reply_->headers[0].value, std::to_string(reply_->content.size()));
+}
