@@ -13,6 +13,7 @@
 #define HTTP_REQUEST_PARSER_H
 
 #include <tuple>
+#include <map>
 #include "request.h"
 
 namespace http {
@@ -40,12 +41,13 @@ class request_parser {
       std::tuple<result_type, InputIterator> parse(request& req,
       InputIterator begin, InputIterator end) {
       
-      req.data_ = begin;
+      req.body_ = begin;
+      parse_method(req, begin);
 
       while (begin != end) {
         result_type result = consume(req, *begin++);
         if (result == good || result == bad) {
-          req.body_ = begin;
+          // begin is the remaining body of the request
           return std::make_tuple(result, begin);
         }
       }
@@ -53,8 +55,13 @@ class request_parser {
     }
 
   private:
+    // set the http method of the request
+    void parse_method(request& req, char *input);
+
     // handle the next character of input
     result_type consume(request& req, char input);
+    std::string temp_key;
+    std::string temp_value;
 
     // check if a byte is an HTTP character
     static bool is_char(int c);

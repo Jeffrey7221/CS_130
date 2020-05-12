@@ -44,9 +44,9 @@ TEST_F(RequestHandlerTestFix, BasicEcho) {
 	  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
   reply_ = echo_handler_.HandleRequest(request_);
 
-	EXPECT_EQ(reply_->status, http::server::reply::ok);
-	EXPECT_EQ(reply_->content, "GET /echo HTTP/1.1\r\n");
-	EXPECT_EQ(reply_->headers[0].value, std::to_string(reply_->content.size()));
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->body_, "GET /echo HTTP/1.1\r\n");
+	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
 }
 
 // testing basic functionality of an echo_handler, should work even with a POST request
@@ -59,9 +59,9 @@ TEST_F(RequestHandlerTestFix, EchoPost) {
 	  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
   reply_ = echo_handler_.HandleRequest(request_);
 
-	EXPECT_EQ(reply_->status, http::server::reply::ok);
-	EXPECT_EQ(reply_->content, "POST / HTTP/1.1\r\nHost: www.w3.org/pub/WWW/TheProject.html\r\n");
-	EXPECT_EQ(reply_->headers[0].value, std::to_string(reply_->content.size()));
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->body_, "POST / HTTP/1.1\r\nHost: www.w3.org/pub/WWW/TheProject.html\r\n");
+	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
 }
 
 // testing basic static_handler, should work given a valid path configuration and file
@@ -85,9 +85,9 @@ TEST_F(RequestHandlerTestFix, GoodStaticHandle) {
 	file_body += "\r\n\r\n";
   	file.close();
 
-	EXPECT_EQ(reply_->status, http::server::reply::ok);
-	EXPECT_EQ(reply_->content, file_body);
-	EXPECT_EQ(reply_->headers[0].value, std::to_string(file_body.size()));
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->body_, file_body);
+	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(file_body.size()));
 }
 
 // testing static handler with no root directory configuration
@@ -112,9 +112,9 @@ TEST_F(RequestHandlerTestFix, StaticHandleNoConfig) {
 	file_body += "\r\n\r\n";  
 	file.close();
 
-	EXPECT_EQ(reply_->status, http::server::reply::ok);
-	EXPECT_EQ(reply_->content, file_body);
-	EXPECT_EQ(reply_->headers[0].value, std::to_string(file_body.size()));
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->body_, file_body);
+	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(file_body.size()));
 }
 
 // testing static handler with a different route, should have a different base directory
@@ -137,9 +137,9 @@ TEST_F(RequestHandlerTestFix, DifferentStaticRoute) {
 	//file_body += "\r\n";
   file.close();
 
-	EXPECT_EQ(reply_->status, http::server::reply::ok);
-	EXPECT_EQ(reply_->content, file_body);
-	EXPECT_EQ(reply_->headers[0].value, std::to_string(file_body.size()));
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->body_, file_body);
+	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(file_body.size()));
 }
 
 // testing file not found case for static handling
@@ -154,13 +154,13 @@ TEST_F(RequestHandlerTestFix, StaticFileNotFound) {
 	  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
   reply_ = static_handler_.HandleRequest(request_);
 
-	EXPECT_EQ(reply_->status, http::server::reply::not_found);
-	EXPECT_EQ(reply_->content, "<html>"
+	EXPECT_EQ(reply_->code_, http::server::reply::not_found);
+	EXPECT_EQ(reply_->body_, "<html>"
     "<head><title>Not Found</title></head>"
     "<body><h1>404 Not Found</h1></body>"
     "</html>"
 		"\r\n");
-	EXPECT_EQ(reply_->headers[0].value, std::to_string(reply_->content.size()));
+	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
 }
 
 
@@ -189,6 +189,6 @@ TEST_F(RequestHandlerTestFix, StatusHandler) {
 	request_parser_.parse(request_, incoming_request_status, incoming_request_status + strlen(incoming_request_status));
 	reply_ = status_handler_.HandleRequest(request_);
 
-	EXPECT_EQ(reply_->status, http::server::reply::ok);
-	EXPECT_EQ(reply_->headers[0].value, std::to_string(reply_->content.size()));
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
 }

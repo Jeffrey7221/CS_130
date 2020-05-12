@@ -74,7 +74,7 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
       }
       
       //map this url to a response code for status Request Handler
-      RequestHandlerDispatcher::request_code_received_[request_.uri].push_back(rep->status);
+      RequestHandlerDispatcher::request_code_received_[request_.uri_].push_back(rep->code_);
 
       // handle write portion
       boost::asio::async_write(socket_,rep->to_buffers(),
@@ -89,7 +89,7 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
       rep = std::shared_ptr<reply>(reply::stock_reply(reply::bad_request));
 
       //map this url to a response code for status Request Handler
-      RequestHandlerDispatcher::request_code_received_[request_.uri].push_back(rep->status);
+      RequestHandlerDispatcher::request_code_received_[request_.uri_].push_back(rep->code_);
       // handle write portion
       boost::asio::async_write(socket_,rep->to_buffers(),
       boost::bind(

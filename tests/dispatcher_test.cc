@@ -48,7 +48,7 @@ TEST_F(DispatcherTestFix, HandlerProperCreation) {
 // testing dispatcher return for echo handler
 TEST_F(DispatcherTestFix, ProperEchoHandlerReturn) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
-    request_.uri = "/echo";
+    request_.uri_ = "/echo";
     std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
     EXPECT_TRUE(handler != NULL);
 }
@@ -56,14 +56,14 @@ TEST_F(DispatcherTestFix, ProperEchoHandlerReturn) {
 // testing dispatcher return for static handler
 TEST_F(DispatcherTestFix, ProperStaticHandlerReturn) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
-    request_.uri = "/static";
+    request_.uri_ = "/static";
     std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
     EXPECT_TRUE(handler != NULL);
 }
 
 TEST_F(DispatcherTestFix, ProperStatusHandlerReturn) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
-    request_.uri = "/status";
+    request_.uri_ = "/status";
     std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
     EXPECT_TRUE(handler != NULL);
 }

@@ -16,7 +16,6 @@
 #include <vector>
 #include <boost/asio.hpp>
 #include <boost/algorithm/string/replace.hpp>
-#include "http/header.h"
 
 namespace http {
 namespace server {
@@ -25,7 +24,7 @@ namespace server {
 struct reply {
 
   // An HTML code indicating success/failure of processing
-  enum status_type {
+  enum status_code {
     ok = 200,
     created = 201,
     accepted = 202,
@@ -42,13 +41,13 @@ struct reply {
     not_implemented = 501,
     bad_gateway = 502,
     service_unavailable = 503
-  } status;
+  } code_;
 
-  // A map of header objects (name, value)
-  std::vector<header> headers;
+  // A map of headers, for convenient lookup ("Content-Type", "Cookie", etc)
+  std::map<std::string, std::string> headers_;
 
   // The content of the response
-  std::string content;
+  std::string body_;
 
   // Convert the reply into a vector of buffers. The buffers do not own the
   // underlying memory blocks, therefore the reply object must remain valid and
@@ -56,7 +55,7 @@ struct reply {
   std::vector<boost::asio::const_buffer> to_buffers();
 
   // Get a stock reply.
-  static reply* stock_reply(status_type status);
+  static reply* stock_reply(status_code code_);
 };
 
 } // namespace server

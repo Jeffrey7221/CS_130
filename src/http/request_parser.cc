@@ -10,8 +10,10 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#include <map>
 #include "http/request_parser.h"
 #include "http/request.h"
+#include "logger/logger.h"
 
 namespace http {
 namespace server {
@@ -24,6 +26,35 @@ void request_parser::reset() {
   state_ = method_start;
 }
 
+// convert HTTP request method to enum parameter
+void request_parser::parse_method(request& req, char *input) {
+  Logger& logger = Logger::getInstance();
+  
+  char method_str[4];
+  memcpy(method_str, input, 3);
+  method_str[3] = '\0';
+
+  if (strcmp(method_str, "GET") == 0) {
+    req.method_ = request::GET_REQ;
+  } else if (strcmp(method_str, "POS") == 0) {
+    req.method_ = request::POST_REQ;
+  } else if (strcmp(method_str, "PUT") == 0) {
+    req.method_ = request::PUT_REQ;
+  } else if (strcmp(method_str, "DEL") == 0) {
+    req.method_ = request::DELETE_REQ;
+  } else if (strcmp(method_str, "CON") == 0) {
+    req.method_ = request::CONNECT_REQ;
+  } else if (strcmp(method_str, "OPT") == 0) {
+    req.method_ = request::OPTIONS_REQ;
+  } else if (strcmp(method_str, "TRA") == 0) {
+    req.method_ = request::TRACE_REQ;
+  } else if (strcmp(method_str, "PAT") == 0) {
+    req.method_ = request::PATCH_REQ;
+  } else {
+    logger.log("Recieved unknown HTTP method", WARNING);
+  }
+}
+
 request_parser::result_type request_parser::consume(request& req, char input) {
   switch (state_) {
     case method_start:
@@ -31,7 +62,6 @@ request_parser::result_type request_parser::consume(request& req, char input) {
         return bad;
       } else {
         state_ = method;
-        req.method.push_back(input);
         return indeterminate;
       }
     case method:
@@ -41,7 +71,6 @@ request_parser::result_type request_parser::consume(request& req, char input) {
       } else if (!is_char(input) || is_ctl(input) || is_tspecial(input)) {
         return bad;
       } else {
-        req.method.push_back(input);
         return indeterminate;
       }
     case uri:
@@ -51,7 +80,7 @@ request_parser::result_type request_parser::consume(request& req, char input) {
       } else if (is_ctl(input)) {
         return bad;
       } else {
-        req.uri.push_back(input);
+        req.uri_.push_back(input);
         return indeterminate;
       }
     case http_version_h:
@@ -130,6 +159,8 @@ request_parser::result_type request_parser::consume(request& req, char input) {
     case expecting_newline_1:
       if (input == '\n') {
         state_ = header_line_start;
+        temp_key = "";
+        temp_value = "";
         return indeterminate;
       } else {
         return bad;
@@ -137,15 +168,19 @@ request_parser::result_type request_parser::consume(request& req, char input) {
     case header_line_start:
       if (input == '\r') {
         state_ = expecting_newline_3;
+        if (temp_key != "") {
+          req.headers_[temp_key] = temp_value;
+          temp_key = "";
+          temp_value = "";
+        }
         return indeterminate;
-      } else if (!req.headers.empty() && (input == ' ' || input == '\t')) {
+      } else if (!req.headers_.empty() && (input == ' ' || input == '\t')) {
         state_ = header_lws;
         return indeterminate;
       } else if (!is_char(input) || is_ctl(input) || is_tspecial(input)) {
         return bad;
       } else {
-        req.headers.push_back(header());
-        req.headers.back().name.push_back(input);
+        temp_key.push_back(input);
         state_ = header_name;
         return indeterminate;
       }
@@ -159,7 +194,7 @@ request_parser::result_type request_parser::consume(request& req, char input) {
         return bad;
       } else {
         state_ = header_value;
-        req.headers.back().value.push_back(input);
+        temp_value.push_back(input);
         return indeterminate;
       }
     case header_name:
@@ -169,7 +204,7 @@ request_parser::result_type request_parser::consume(request& req, char input) {
       } else if (!is_char(input) || is_ctl(input) || is_tspecial(input)) {
         return bad;
       } else {
-        req.headers.back().name.push_back(input);
+        temp_key.push_back(input);
         return indeterminate;
       }
     case space_before_header_value:
@@ -186,12 +221,15 @@ request_parser::result_type request_parser::consume(request& req, char input) {
       } else if (is_ctl(input)) {
         return bad;
       } else {
-        req.headers.back().value.push_back(input);
+        temp_value.push_back(input);
         return indeterminate;
       }
     case expecting_newline_2:
       if (input == '\n') {
         state_ = header_line_start;
+        req.headers_[temp_key] = temp_value;
+        temp_key = "";
+        temp_value = "";
         return indeterminate;
       } else {
         return bad;

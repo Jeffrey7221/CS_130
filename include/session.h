@@ -12,7 +12,6 @@
 
 #include "http/request.h"
 #include "http/request_parser.h"
-#include "http/header.h"
 #include "http/reply.h"
 
 #include "request_handler/dispatcher.h"

@@ -30,7 +30,7 @@ std::shared_ptr<reply> StaticRequestHandler::HandleRequest(const request& reques
     Logger& logger = Logger::getInstance();
 
     // create relative path to requested file 
-    std::string new_uri = request_.uri;
+    std::string new_uri = request_.uri_;
     
     // replace location prefix with root path
     new_uri.replace(0, location_path_.size(), root_);
@@ -60,20 +60,19 @@ std::shared_ptr<reply> StaticRequestHandler::HandleRequest(const request& reques
 
     logger.log("Static file has been found and read, constructing HTTP reply", NORMAL);
 
-    // create HTTP reply with the file contents as the reply body
-    std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());
-    rep->status = reply::ok; // set to http 200
-    rep->headers.resize(2);
-    rep->headers[0].name = "Content-Length";
-    rep->headers[1].name = "Content-Type";
-    rep->headers[1].value = setContentType(new_uri); 
-    // formatting new lines properly for text
-    if (rep->headers[1].value == "text/html" || rep->headers[1].value == "text/plain") {
+    // choose content type
+    std::string content_type = setContentType(new_uri);
+    if (content_type == "text/html" || content_type == "text/plain") {
         boost::replace_all(content_, "\n", "\r\n");
         content_.append("\r\n");
     }
-    rep->content = content_;
-    rep->headers[0].value = std::to_string(content_.length());
+
+    // create HTTP reply with the file contents as the reply body
+    std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());
+    rep->code_ = reply::ok; // set to http 200
+    rep->headers_["Content-Length"] = std::to_string(content_.length());
+    rep->headers_["Content-Type"] = content_type;
+    rep->body_ = content_;
 
     return rep;
 }

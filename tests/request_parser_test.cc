@@ -1,3 +1,4 @@
+#include <map>
 #include "gtest/gtest.h"
 #include "http/request_parser.h"
 #include "http/request.h"
@@ -48,10 +49,10 @@ TEST_F(RequestParserTestFix, BodyTests) {
 	std::tie(request_parser_result_,std::ignore) =
 		request_parser_.parse(request_,incoming_request, incoming_request + strlen(incoming_request));
 
-	EXPECT_EQ(request_.method, "GET");
+	EXPECT_EQ(request_.method_, http::server::request::GET_REQ);
 	EXPECT_EQ(request_.http_version_major, 1);
 	EXPECT_EQ(request_.http_version_minor, 1);
-	EXPECT_EQ(request_.uri, "/");
+	EXPECT_EQ(request_.uri_, "/");
 }
 
 // tests Bad http version major
@@ -261,11 +262,8 @@ TEST_F(RequestParserTestFix, MultiHeader) {
 	char incoming_request[1000] = "GET / HTTP/1.1\r\nHost: www.w3.org/pub/WWW/TheProject.html\r\nTrace: index.html\r\n\r\n";
 	std::tie(request_parser_result_,std::ignore) = request_parser_.parse(request_,incoming_request, incoming_request + strlen(incoming_request));
 	
-
-	EXPECT_EQ(request_.headers[0].name, "Host");
-	EXPECT_EQ(request_.headers[1].name, "Trace");
-	EXPECT_EQ(request_.headers[0].value, "www.w3.org/pub/WWW/TheProject.html");
-	EXPECT_EQ(request_.headers[1].value, "index.html");
+	EXPECT_EQ(request_.headers_["Host"], "www.w3.org/pub/WWW/TheProject.html");
+	EXPECT_EQ(request_.headers_["Trace"], "index.html");
 }
 
 // tests period in between version

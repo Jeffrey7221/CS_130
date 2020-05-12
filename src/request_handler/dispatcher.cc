@@ -35,7 +35,7 @@ std::shared_ptr<RequestHandler> RequestHandlerDispatcher::dispatch(request& req)
     logger.log("Dispatching request handler", NORMAL);
 
     // remove any trailing slashes, except for root '/'
-    std::string path_uri = req.uri;
+    std::string path_uri = req.uri_;
     while(path_uri.length() > 1 && path_uri.back() == '/')
         path_uri.pop_back();
 
