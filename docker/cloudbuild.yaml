@@ -30,4 +30,4 @@ steps:
     '-t', 'gcr.io/$PROJECT_ID/wfh-web-server:test-coverage',
     '.'
   ]
-images: ['gcr.io/$PROJECT_ID/wfh-web-server:base', 'gcr.io/$PROJECT_ID/wfh-web-server:latest']
+images: ['gcr.io/$PROJECT_ID/wfh-web-server:base', 'gcr.io/$PROJECT_ID/wfh-web-server:latest','gcr.io/$PROJECT_ID/wfh-web-server:test-coverage']
