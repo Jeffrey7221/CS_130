@@ -46,10 +46,11 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
     } else {
       // format string
       std::string data = data_;
+      while(data.length() > 1 && data.back() != '\n')
+        data.pop_back();
       boost::replace_all(data, "\n", "\r\n");
       data.append("\r\n");
       strcpy(data_, data.c_str());
-
       std::tie(result, std::ignore) = request_parser_.parse(request_, data_, data_ + strlen(data_));
     }
     
@@ -65,7 +66,7 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
 
       // get request handler
       handler = dispatcher_->dispatch(request_);
-
+      
       if (handler == NULL) {
         rep = std::shared_ptr<reply>(reply::stock_reply(reply::not_found));
       } else {

@@ -44,7 +44,8 @@ add_library(nginx_config_parser src/config_parser/nginx_config_parser.cc)
 add_library(nginx_config_statement src/config_parser/nginx_config_statement.cc)
 add_library(logger_lib src/logger/logger.cc)
 add_library(request_handler_lib src/request_handler/echo_request_handler.cc 
-  src/request_handler/static_request_handler.cc src/request_handler/dispatcher.cc src/request_handler/status_handler.cc)
+  src/request_handler/static_request_handler.cc src/request_handler/dispatcher.cc 
+  src/request_handler/status_handler.cc src/request_handler/bad_request_handler.cc)
 
 # Update executable name, srcs, and deps
 add_executable(server src/server_main.cc)
@@ -69,7 +70,7 @@ target_link_libraries(reply_test reply_lib logger_lib gtest_main Boost::system B
 target_link_libraries(nginx_config_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_parser_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_statement_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
-target_link_libraries(session_test session_lib request_parser_lib nginx_config request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
+target_link_libraries(session_test session_lib request_parser_lib nginx_config nginx_config_parser request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
 target_link_libraries(server_test server_lib session_lib request_parser_lib nginx_config request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
 target_link_libraries(logger_test logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
 target_link_libraries(dispatcher_test request_handler_lib request_parser_lib logger_lib

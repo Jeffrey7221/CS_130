@@ -3,9 +3,6 @@
 server {
   port 80;
   server_name foo.com;
-  location "/" StaticHandler {
-    root /data;
-  }
 
   location "/static" StaticHandler {
     root /data;
@@ -15,5 +12,8 @@ server {
   }
 
   location "/echo" EchoHandler {
+  }
+
+  location "/" BadRequestHandler {
   }
 }

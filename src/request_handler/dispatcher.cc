@@ -1,4 +1,5 @@
 #include "request_handler/dispatcher.h"
+#include "request_handler/bad_request_handler.h"
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/static_request_handler.h"
 #include "request_handler/status_handler.h"
@@ -18,8 +19,10 @@ RequestHandlerDispatcher::RequestHandlerDispatcher(const NginxConfig& config): c
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "echo");
                     } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StaticHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "static");
-                    }else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StatusHandler") {
+                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StatusHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "status");
+                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "BadRequestHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "bad");
                     }
                 }
             }
@@ -96,7 +99,12 @@ void RequestHandlerDispatcher::createHandler(const std::shared_ptr<NginxConfigSt
         handlers_[path_uri] = std::shared_ptr<RequestHandler>(StatusRequestHandler::Init(*(config_statement_->child_block_), path_uri));
         request_handler_uri[path_uri] = "status handler";
         num_handlers++;
-    } else {
+    } else if (HandlerType == "bad") {
+        logger.log("Adding a bad request handler at path: " + path_uri, NORMAL);
+        handlers_["/"] = std::shared_ptr<RequestHandler>(BadRequestHandler::Init(*(config_statement_->child_block_), "/"));
+        request_handler_uri["/"] = "bad handler";
+        num_handlers++;
+    } else { 
         return;
     }
 }

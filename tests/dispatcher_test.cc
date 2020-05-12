@@ -42,7 +42,8 @@ TEST_F(DispatcherTestFix, HandlerProperCreation) {
     EXPECT_EQ(dispatcher_->handlers_.count("/static"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/static_2"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/status"), 1);
-    EXPECT_EQ(dispatcher_->handlers_.size(), 4);
+    EXPECT_EQ(dispatcher_->handlers_.count("/"), 1);
+    EXPECT_EQ(dispatcher_->handlers_.size(), 5);
 }
 
 // testing dispatcher return for echo handler
@@ -68,3 +69,10 @@ TEST_F(DispatcherTestFix, ProperStatusHandlerReturn) {
     EXPECT_TRUE(handler != NULL);
 }
 
+// testing dispatcher return for echo handler
+TEST_F(DispatcherTestFix, ProperBadHandlerReturn) {
+    RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
+    request_.uri_ = "/";
+    std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+    EXPECT_TRUE(handler != NULL);
+}
