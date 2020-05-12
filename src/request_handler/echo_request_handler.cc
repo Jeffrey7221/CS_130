@@ -1,7 +1,7 @@
 #include "request_handler/echo_request_handler.h"
 #include "logger/logger.h"
 
-RequestHandler* EchoRequestHandler::Init(const NginxConfig& config) {
+RequestHandler* EchoRequestHandler::Init(const NginxConfig& config, const std::string location_path) {
     return new EchoRequestHandler();
 }
 

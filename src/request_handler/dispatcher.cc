@@ -83,7 +83,7 @@ void RequestHandlerDispatcher::createHandler(const std::shared_ptr<NginxConfigSt
     // create the echo and static handlers, and increment the handlers counter
     if(HandlerType == "echo") {
         logger.log("Adding an echo handler at path: " + path_uri, NORMAL);
-        handlers_[path_uri] = std::shared_ptr<RequestHandler>(EchoRequestHandler::Init(*(config_statement_->child_block_)));
+        handlers_[path_uri] = std::shared_ptr<RequestHandler>(EchoRequestHandler::Init(*(config_statement_->child_block_), path_uri));
         request_handler_uri[path_uri] = "echo handler";
         num_handlers++;
     } else if (HandlerType == "static") {
@@ -93,7 +93,7 @@ void RequestHandlerDispatcher::createHandler(const std::shared_ptr<NginxConfigSt
         num_handlers++;
     } else if (HandlerType == "status") {
         logger.log("Adding an status handler at path: " + path_uri, NORMAL);
-        handlers_[path_uri] = std::shared_ptr<RequestHandler>(StatusRequestHandler::Init(*(config_statement_->child_block_)));
+        handlers_[path_uri] = std::shared_ptr<RequestHandler>(StatusRequestHandler::Init(*(config_statement_->child_block_), path_uri));
         request_handler_uri[path_uri] = "status handler";
         num_handlers++;
     } else {
