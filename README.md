@@ -104,3 +104,141 @@ To build the container for test coverage
 
 4. To stop the currently running Docker image, use the following command in another terminal window
 ``` docker container stop my_run ```
+
+## 3. Adding a request Handler (We'll use status handler as an example)
+
+1. First declare a handler in the config file located in ./config folder.
+
+```  
+location "/static" StaticHandler {
+    root /data;
+} 
+```
+
+2. Create a new class and header file for your new handler and implement those functions in your .cc file which is shown below
+```
+/* Status Handler Header*/
+#ifndef STATUS_HANDLER_H
+#define STATUS_HANDLER_H
+
+#include "request_handler.h"
+
+class StatusRequestHandler : public RequestHandler  {
+
+public:
+  StatusRequestHandler(const NginxConfig &config);
+
+  static RequestHandler* Init(const NginxConfig& config, const std::string location_path);
+
+  std::shared_ptr<reply> HandleRequest(const request& request_) override;  
+
+private:
+  std::string display_content;
+  std::string request_handler_info;
+  std::string request_info;
+};
+#endif```
+
+```
+#include "request_handler/status_handler.h"
+#include "request_handler/dispatcher.h"
+#include <iostream>
+#include "logger/logger.h"
+
+
+StatusRequestHandler::StatusRequestHandler(const NginxConfig &config):
+request_handler_info(""), request_info(""),display_content("") {}
+
+RequestHandler* StatusRequestHandler::Init(const NginxConfig& config, const std::string location_path){
+ Implementation here. Please reference request_handler/status_handler.cc for more information
+}
+
+std::shared_ptr<reply> StatusRequestHandler::HandleRequest(const request& request_) {
+ Impementation here. Please reference request_handler/status_handler.cc for more information
+}
+```
+
+3. In dispatcher.cc, add the type of of handler which in this case is "status" and "StatusHandler" matches our config file as well as add in the header file ```#include "request_handler/static_request_handler.h"``` for our handler class
+
+```
+RequestHandlerDispatcher::RequestHandlerDispatcher(const NginxConfig& config): config_(config) {
+    Logger& logger = Logger::getInstance();
+    logger.log("Creating request handlers based on config files", NORMAL);
+
+    for(int i = 0; i < config_.statements_.size(); i++) {
+        if(config_.statements_[i]->tokens_[0] == "server" && config_.statements_[i]->tokens_.size() == 1) {
+            for(int j = 0; j < config_.statements_[i]->child_block_->statements_.size(); j++) {
+                if (config_.statements_[i]->child_block_->statements_[j]->tokens_.size() > 2) {
+                    if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "EchoHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "echo");
+                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StaticHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "static");
+                    }else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StatusHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "status");
+                    }
+                }
+            }
+            
+        }
+        
+    }
+}
+```
+
+4. In Cmake, link this class to our request_handler
+```
+add_library(request_handler_lib src/request_handler/echo_request_handler.cc 
+  src/request_handler/static_request_handler.cc src/request_handler/dispatcher.cc 
+
+  # new class linked
+
+  src/request_handler/status_handler.cc)
+```
+
+5. Add Unit Tests! (Optional, but advised and recommended to do). Add tests for tests/dispatcher_test.cc and tests/request_handler_test.cc
+
+
+```
+#dispatcher_test.cc
+
+TEST_F(DispatcherTestFix, ProperStatusHandlerReturn) {
+    RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
+    request_.uri_ = "/status";
+    std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+    EXPECT_TRUE(handler != NULL);
+}
+```
+
+```
+#request_handler_test.cc
+TEST_F(RequestHandlerTestFix, StatusHandler) {
+
+  char incoming_request[1024] = "GET /index.html HTTP/1.1\r\n\r\n";
+  char incoming_request_status[1024] = "GET /status HTTP/1.1\r\n\r\n";
+  std::string static_path = "/static/";
+  std::string static_root = "/tests/static_data/";
+  StaticRequestHandler static_handler_(out_config, static_path, static_root);
+  StatusRequestHandler status_handler_(out_config);
+
+  std::tie(request_parser_result_, std::ignore) =
+  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+  reply_ = static_handler_.HandleRequest(request_);
+
+  std::tie(request_parser_result_, std::ignore) =
+  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+  reply_ = static_handler_.HandleRequest(request_);
+
+  std::tie(request_parser_result_, std::ignore) =
+  request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+  reply_ = static_handler_.HandleRequest(request_);
+
+  std::tie(request_parser_result_, std::ignore) =
+  request_parser_.parse(request_, incoming_request_status, incoming_request_status + strlen(incoming_request_status));
+  reply_ = status_handler_.HandleRequest(request_);
+
+  EXPECT_EQ(reply_->code_, http::server::reply::ok);
+  EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
+}
+```
+
+
