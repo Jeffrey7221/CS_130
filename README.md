@@ -134,7 +134,9 @@ $ ../build/bin/dispatcher_test
 ## Building on Docker
 
 1. Build and tag a base image
+```
 docker build -f docker/base.Dockerfile -t wfh-web-server:base .
+```
 
 2. Build an image for our webserver
 ```
