@@ -76,3 +76,31 @@ TEST_F(DispatcherTestFix, ProperBadHandlerReturn) {
     std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
     EXPECT_TRUE(handler != NULL);
 }
+
+// testing 404 not found error request for the bad request handler
+TEST_F(DispatcherTestFix, VerifyErrorCode) {
+    RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
+    request_.uri_ = "/randompath";
+    std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+    std::shared_ptr<reply> rep = handler->HandleRequest(request_);
+    EXPECT_TRUE(rep->code_ == 404);
+}
+
+// testing 404 not found error request for the bad request handler
+TEST_F(DispatcherTestFix, VerifyErrorCode2) {
+    RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
+    request_.uri_ = "/static/nonexistentfile.txt";
+    std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+    std::shared_ptr<reply> rep = handler->HandleRequest(request_);
+    EXPECT_TRUE(rep->code_ == 404);
+}
+
+// testing 404 not found error request for the bad request handler
+TEST_F(DispatcherTestFix, VerifyNoErrorCode) {
+    RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
+    request_.uri_ = "/echo";
+    std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+    std::shared_ptr<reply> rep = handler->HandleRequest(request_);
+    EXPECT_TRUE(handler != NULL);
+    EXPECT_TRUE(rep->code_ != 404);
+}
