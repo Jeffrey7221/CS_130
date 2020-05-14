@@ -40,9 +40,9 @@ std::shared_ptr<reply> StatusRequestHandler::HandleRequest(const request& reques
   
   std::string display_content = "<html>"
   "<body><h2>Status Handler</h1><div>""</div>"
-  "<table>""<tr><th>Total Number of Requests</th></tr>""<tr><td>" + std::to_string(RequestHandlerDispatcher::num_handlers) + "</td></tr>""</table>"
+  "<table>""<tr><th>Total Number of Requests</th></tr>""<tr><td>" + std::to_string(RequestHandlerDispatcher::num_requests) + "</td></tr>""</table>"
   "<table>""<tr><th>Requests Server Received : </th><th>Response Code</th></tr>" + request_info + "</table>"
-  "<table>""<tr><th>Request Handlers Received : </th><th>URL Prefixes</th></tr>" + request_handler_info + "</table>"
+  "<table>""<tr><th>URL Prefixes : </th><th>Request Handlers Received</th></tr>" + request_handler_info + "</table>"
   "</body>"
   "</html>";
 

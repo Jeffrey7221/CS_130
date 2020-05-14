@@ -111,5 +111,6 @@ void RequestHandlerDispatcher::createHandler(const std::shared_ptr<NginxConfigSt
 
 
 size_t RequestHandlerDispatcher::num_handlers = 0;
+size_t RequestHandlerDispatcher::num_requests = 0;
 std::map<std::string, std::vector<int>> RequestHandlerDispatcher::request_code_received_;
 std::map<std::string, std::string> RequestHandlerDispatcher::request_handler_uri;
