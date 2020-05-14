@@ -12,7 +12,7 @@ std::shared_ptr<reply> BadRequestHandler::HandleRequest(const request& request_)
     Logger& logger = Logger::getInstance(); 
     logger.log("Constructing a 404 Not Found HTTP reply for bad echo request", NORMAL);
     
-    const char not_found[] =
+    std::string not_found =
   "<html>"
   "<head><title>Not Found</title></head>"
   "<body><h1>404 Not Found</h1></body>"
@@ -20,12 +20,9 @@ std::shared_ptr<reply> BadRequestHandler::HandleRequest(const request& request_)
 
     std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());
 
-    std::string data = not_found;
-    boost::replace_all(data, "\n", "\r\n");
-    data.append("\r\n");
     rep->code_ = reply::not_found; // set to http 404
-    rep->body_ = data; // send request in body of response
-    rep->headers_["Content-Length"] = std::to_string(data.size());
-    rep->headers_["Content-Type"] = "text/plain";
+    rep->body_ = not_found; // send request in body of response
+    rep->headers_["Content-Length"] = std::to_string(not_found.size());
+    rep->headers_["Content-Type"] = "text/html";
     return rep;
 }  

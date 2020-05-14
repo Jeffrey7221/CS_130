@@ -34,6 +34,9 @@ void session::start() {
 
 // based on https://www.boost.org/doc/libs/1_64_0/doc/html/boost_asio/example/cpp11/http/server/connection.cpp
 int session::handle_read(const boost::system::error_code& error, size_t bytes_transferred) {
+  //increment number of requests. should increment regardless of request
+  RequestHandlerDispatcher::num_requests++;
+
   Logger& logger = Logger::getInstance();
   if (!error) {
     bool formatted = false;
@@ -77,9 +80,6 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
       //map this url to a response code for status Request Handler
       RequestHandlerDispatcher::request_code_received_[request_.uri_].push_back(rep->code_);
 
-      //increment number of requests
-      RequestHandlerDispatcher::num_requests++;
-
       // handle write portion
       boost::asio::async_write(socket_,rep->to_buffers(),
       boost::bind(
@@ -94,9 +94,6 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
 
       //map this url to a response code for status Request Handler
       RequestHandlerDispatcher::request_code_received_[request_.uri_].push_back(rep->code_);
-
-      //increment number of requests
-      RequestHandlerDispatcher::num_requests++;
       
       // handle write portion
       boost::asio::async_write(socket_,rep->to_buffers(),

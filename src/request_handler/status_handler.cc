@@ -19,8 +19,11 @@ std::shared_ptr<reply> StatusRequestHandler::HandleRequest(const request& reques
 
   std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply()); //create new reply
   rep->code_ = reply::ok; 
-  
-  RequestHandlerDispatcher::request_code_received_[request_.uri_].push_back(rep->code_); // push this mapping before we iterate
+
+    //map this url to a response code for status Request Handler
+  RequestHandlerDispatcher::request_code_received_[request_.uri_].push_back(rep->code_);
+
+  request_info = ""; // need to clear this variable due to being a static variable
 
   // Get Mapping of url to response code
   for (auto ite = RequestHandlerDispatcher::request_code_received_.begin(); ite != RequestHandlerDispatcher::request_code_received_.end(); ite++){
@@ -32,6 +35,7 @@ std::shared_ptr<reply> StatusRequestHandler::HandleRequest(const request& reques
   logger.log("Looking for Mapping between Type of Request Handler and URL Prefix", NORMAL);
 
   // Get mapping of number of request handlers and their urls
+  request_handler_info = ""; // need to clear this variable due to being a static variable
   for (auto ite = RequestHandlerDispatcher::request_handler_uri.begin(); ite != RequestHandlerDispatcher::request_handler_uri.end(); ite++){
       request_handler_info += "<tr><td>" + ite->first +"</td><td>" + ite->second+ "</td></tr>";
   }
@@ -49,6 +53,8 @@ std::shared_ptr<reply> StatusRequestHandler::HandleRequest(const request& reques
   rep->body_ = display_content;
   rep->headers_["Content-Length"] = std::to_string((rep->body_).length());
   rep->headers_["Content-Type"] = "text/html";
+
+  RequestHandlerDispatcher::request_code_received_[request_.uri_].pop_back(); //push and pop for the sake of the HTML display
 
 	return rep;
 }
