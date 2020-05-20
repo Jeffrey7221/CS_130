@@ -97,3 +97,6 @@ generate_coverage_report(TARGETS server server_lib request_handler_lib reply_lib
 
 # Update with integration tests
 add_test(NAME integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_test.sh)
+
+# Update with integration multithread test
+add_test(NAME multithread_integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tests/multithread_test.sh)
