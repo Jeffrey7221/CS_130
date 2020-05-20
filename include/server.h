@@ -15,8 +15,11 @@ class server {
   public:
     server(boost::asio::io_service& io_service, const NginxConfig &config, short port);
 
+    void run();
+
     // Make our test cases a friend for access to private variables
     friend class ServerTest_HandleAcceptTest_Test;
+
 
   private:
     // create a new session, start accepting requests

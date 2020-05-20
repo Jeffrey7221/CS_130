@@ -22,6 +22,9 @@ namespace keywords = boost::log::keywords;
 using boost::asio::ip::tcp;
 using http::server::request;
 
+std::mutex g_pages_mutex;
+
+
 Logger::Logger () {
     init();
     logging::add_common_attributes();
@@ -42,6 +45,7 @@ void Logger::init()
 
 void Logger::log(std::string message, severity_level severity) 
 {
+    std::lock_guard<std::mutex> guard(g_pages_mutex); // for critical section
     switch(severity) {
         case NORMAL:
             BOOST_LOG_SEV(slg, NORMAL) << "<Normal>: " << message;
@@ -63,6 +67,7 @@ void Logger::log(std::string message, severity_level severity)
 
 void Logger::logRequest(request request_, tcp::socket& socket_, severity_level severity)
 {
+    std::lock_guard<std::mutex> guard(g_pages_mutex); //for critical section
     std::string msg = "Request received. Sender IP: " + socket_.remote_endpoint().address().to_string() 
         + " via HTTP: " + std::to_string(request_.http_version_major) + "." + std::to_string(request_.http_version_minor);
     switch(severity) {
@@ -77,6 +82,7 @@ void Logger::logRequest(request request_, tcp::socket& socket_, severity_level s
             BOOST_LOG_SEV(slg, NORMAL) << "<Normal>: " << "Odd request received..." << msg;
             break;
     }
+
 }
 
 

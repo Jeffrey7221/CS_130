@@ -8,8 +8,26 @@
 #include "session.h"
 #include "server.h"
 #include "logger/logger.h"
+#include <thread>         // std::thread
+#include <vector>
 
 using boost::asio::ip::tcp;
+using namespace std;
+
+void server::run(){ //multithread function which creates threads based on server architecture, runs each thread and then eventually joins at the end
+  // we use a vector to store the threads and then iterate through this vector to eventually join
+  Logger& logger = Logger::getInstance();
+  unsigned int num_threads = std::thread::hardware_concurrency(); //number of threads on machine
+  vector<thread*>  thread_vector;
+  for(int i = 0; i < num_threads; i++){
+    thread_vector.push_back(new thread(boost::bind(&boost::asio::io_service::run, &io_service_)));
+    logger.log("New Thread Created with ID: " + std::to_string(i), NOTIFICATION);
+  }
+  for(int i = 0; i < num_threads; i++){ // join threads
+    thread_vector[i]->join();
+  }
+
+}
 
 server::server(boost::asio::io_service& io_service, const NginxConfig &config, short port)
   : io_service_(io_service),

@@ -13,6 +13,9 @@
 #include "http/request.h"
 #include <boost/asio.hpp>
 #include <boost/asio/signal_set.hpp>
+#include <mutex>          // std::mutex
+
+
 
 namespace logging = boost::log;
 namespace sinks = boost::log::sinks;
@@ -36,6 +39,7 @@ enum severity_level
 
 class Logger {
     public:
+
         // standard logging function
         void log(std::string message, severity_level severity);
 
@@ -47,6 +51,7 @@ class Logger {
 
         // logs details of a client's request including IP address and HTTP version
         void logRequest(request request_, tcp::socket& socket_, severity_level severity);
+
 
     protected:
         Logger();
