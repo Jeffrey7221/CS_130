@@ -36,6 +36,8 @@ void request_parser::parse_method(request& req, char *input) {
 
   if (strcmp(method_str, "GET") == 0) {
     req.method_ = request::GET_REQ;
+  } else if (strcmp(method_str, "HEA") == 0) {
+    req.method_ = request::HEAD_REQ;
   } else if (strcmp(method_str, "POS") == 0) {
     req.method_ = request::POST_REQ;
   } else if (strcmp(method_str, "PUT") == 0) {

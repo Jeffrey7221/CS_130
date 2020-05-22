@@ -45,7 +45,8 @@ add_library(nginx_config_statement src/config_parser/nginx_config_statement.cc)
 add_library(logger_lib src/logger/logger.cc)
 add_library(request_handler_lib src/request_handler/echo_request_handler.cc 
   src/request_handler/static_request_handler.cc src/request_handler/dispatcher.cc 
-  src/request_handler/status_handler.cc src/request_handler/bad_request_handler.cc)
+  src/request_handler/status_handler.cc src/request_handler/bad_request_handler.cc
+  src/request_handler/reverse_proxy_handler.cc)
 
 # Update executable name, srcs, and deps
 add_executable(server src/server_main.cc)

@@ -6,6 +6,7 @@
 #include "request_handler/request_handler.h"
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/static_request_handler.h"
+#include "request_handler/reverse_proxy_handler.h"
 #include "request_handler/status_handler.h"
 #include "http/request_parser.h"
 #include "http/request.h"
@@ -190,5 +191,86 @@ TEST_F(RequestHandlerTestFix, StatusHandler) {
 	reply_ = status_handler_.HandleRequest(request_);
 
 	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
+}
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerSuccess) {
+	char incoming_request[1024] = "GET /reverse HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.ucla.edu";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->headers_["Content-Type"], "text/html; charset=UTF-8");
+	EXPECT_NE(reply_->body_.size(), 0);  // Body should be non-empty
+}
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerSuccessImage) {
+	char incoming_request[1024] = "GET /reverse/content/hero/cute_puppies_hero.jpg HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "cdn.akc.org";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->headers_["Content-Type"], "image/jpeg");
+	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
+}
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerSuccessHEADRequest) {
+	char incoming_request[1024] = "HEAD /reverse2 HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.ucla.edu";
+	std::string location_path = "/reverse2"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	std::cout << "METHOD: " << request_.method_ << std::endl;
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->headers_["Content-Type"], "text/html; charset=UTF-8");
+	EXPECT_EQ(reply_->body_.size(), 0);  // HEAD requests only return headers, not the body
+}
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerNotFoundWebpage) {
+	char incoming_request[1024] = "GET /reverse/nom HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.google.com";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_EQ(reply_->code_, http::server::reply::not_found);
+	EXPECT_EQ(reply_->headers_["Content-Type"], "text/html; charset=UTF-8");
+	EXPECT_NE(reply_->body_.size(), 0);  // Body should be non-empty
+}
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerInvalidAddress) {
+	char incoming_request[1024] = "GET /reverse HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.google.edu";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_EQ(reply_->code_, http::server::reply::internal_server_error);
+	EXPECT_EQ(reply_->headers_["Content-Type"], "text/html");
 	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
 }
