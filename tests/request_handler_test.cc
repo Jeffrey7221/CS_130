@@ -262,7 +262,7 @@ TEST_F(RequestHandlerTestFix, ReverseProxyHandlerNotFoundWebpage) {
 TEST_F(RequestHandlerTestFix, ReverseProxyHandlerInvalidAddress) {
 	char incoming_request[1024] = "GET /reverse HTTP/1.1\r\n\r\n";
 	int proxy_port = 80;
-	std::string proxy_dest = "www.google.edu";
+	std::string proxy_dest = "@";
 	std::string location_path = "/reverse"; 
 	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
 
@@ -273,4 +273,19 @@ TEST_F(RequestHandlerTestFix, ReverseProxyHandlerInvalidAddress) {
 	EXPECT_EQ(reply_->code_, http::server::reply::internal_server_error);
 	EXPECT_EQ(reply_->headers_["Content-Type"], "text/html");
 	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
+}
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerRedirect) {
+	char incoming_request[1024] = "GET /reverse/webhp HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.google.com";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->headers_["Content-Type"], "text/html; charset=ISO-8859-1");
 }

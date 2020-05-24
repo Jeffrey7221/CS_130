@@ -115,7 +115,7 @@ std::shared_ptr<http::server::reply> ReverseProxyHandler::HandleRequest(const re
             + " failed proxy response read with error: " + proxy_read_error.message(), ERROR);
         return std::shared_ptr<reply>(reply::stock_reply(reply::internal_server_error));
     }
-    logger.log("Succesfully obtained resposne from: " + proxy_dest_ + "!", NOTIFICATION);
+    logger.log("Succesfully obtained response from: " + proxy_dest_ + "!", NOTIFICATION);
 
     // Parse the reply
     http::server::reply reply;
@@ -169,7 +169,36 @@ std::shared_ptr<http::server::reply> ReverseProxyHandler::HandleRequest(const re
         reply.headers_[boost::trim_copy(header_key)] = boost::trim_copy(tmp_buf);
         headers = headers.substr(current_pos + delim.size());
     }
-    // TODO(justinj151): Handle relative paths inside the html body and 302 redirect
+
+    // If the reply contains a 302 redirect:
+    // Send the request to that specified redirect URL
+    if (reply.code_ == http::server::reply::moved_temporarily) {
+        request redirect_request = request_;
+        std::string redirect_url = reply.headers_["Location"];
+        logger.log("Received redirect request to: " + redirect_url, NOTIFICATION);
+
+        std::string redirect_path;
+        int host_start = 0;
+        int path_start;
+
+        if (redirect_url.find("https://") != std::string::npos) {
+            host_start = 8;
+        } else if (redirect_url.find("http://") != std::string::npos) {
+            host_start = 7;
+        }
+
+        std::string tmp = redirect_url.substr(host_start); // Remove 'http(s)://' from the string
+        path_start = tmp.find("/");
+        redirect_path = tmp.substr(path_start);
+
+        logger.log("Redirect path is: " + redirect_path, NOTIFICATION);
+
+        redirect_request.uri_ = redirect_path;
+
+        return HandleRequest(redirect_request);
+    }
+
+    // TODO(justinj151): Handle relative paths inside the html body
 
     return std::make_shared<http::server::reply>(reply);
 }
