@@ -26,4 +26,8 @@ server {
     proxy_port 80;
     proxy_dest www.ucla.edu;
   }
+
+  location "/redirect" RedirectHandler {
+    host localhost;
+  }
 }

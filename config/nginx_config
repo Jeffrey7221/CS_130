@@ -22,8 +22,14 @@ server {
     proxy_dest www.ucla.edu;
   }
 
-  location "/google" ReverseProxyHandler {
+  # Call /local/redirect 
+  location "/local" ReverseProxyHandler {
     proxy_port 80;
-    proxy_dest www.google.com/search;
+    proxy_dest 35.185.213.80;
+  }
+
+  location "/redirect" RedirectHandler {
+    port 80
+    host 35.185.213.80;
   }
 }

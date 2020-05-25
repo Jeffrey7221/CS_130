@@ -7,6 +7,7 @@
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/static_request_handler.h"
 #include "request_handler/reverse_proxy_handler.h"
+#include "request_handler/redirect_handler.h"
 #include "request_handler/status_handler.h"
 #include "http/request_parser.h"
 #include "http/request.h"
@@ -288,4 +289,17 @@ TEST_F(RequestHandlerTestFix, ReverseProxyHandlerRedirect) {
 
 	EXPECT_EQ(reply_->code_, http::server::reply::ok);
 	EXPECT_EQ(reply_->headers_["Content-Type"], "text/html; charset=ISO-8859-1");
+}
+
+TEST_F(RequestHandlerTestFix, RedirectHandlerTest) {
+	char incoming_request[1024] = "GET /redirect HTTP/1.1\r\n\r\n";
+	std::string host = "localhost";
+	int port = 8080;
+	RedirectHandler redirect_handler_(host);
+
+	reply_ = redirect_handler_.HandleRequest(request_);
+
+	EXPECT_EQ(reply_->code_, http::server::reply::moved_temporarily);
+	EXPECT_EQ(reply_->headers_["Location"], "http://" + host + "/static/index.html");
+	EXPECT_EQ(reply_->body_, "HTTP/1.1 302 Found\r\nLocation: " + reply_->headers_["Location"] + "\r\n\r\n");
 }

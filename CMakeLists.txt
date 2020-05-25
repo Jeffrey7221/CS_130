@@ -32,6 +32,9 @@ set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.50 REQUIRED COMPONENTS system filesystem log regex)
 message(STATUS "Boost version: ${Boost_VERSION}")
 
+# Enable ZLIB
+find_package(ZLIB)
+
 include_directories(include)
 
 # Update name and srcs
@@ -46,12 +49,12 @@ add_library(logger_lib src/logger/logger.cc)
 add_library(request_handler_lib src/request_handler/echo_request_handler.cc 
   src/request_handler/static_request_handler.cc src/request_handler/dispatcher.cc 
   src/request_handler/status_handler.cc src/request_handler/bad_request_handler.cc
-  src/request_handler/reverse_proxy_handler.cc)
+  src/request_handler/reverse_proxy_handler.cc src/request_handler/redirect_handler.cc)
 
 # Update executable name, srcs, and deps
 add_executable(server src/server_main.cc)
 target_link_libraries(server server_lib session_lib request_parser_lib nginx_config nginx_config_parser nginx_config_statement logger_lib request_handler_lib
-  Boost::system Boost::filesystem Boost::regex Boost::log_setup Boost::log)
+  Boost::system Boost::filesystem Boost::regex Boost::log_setup Boost::log ZLIB::ZLIB)
 
 # Update test executable name, srcs, and deps
 add_executable(request_parser_test tests/request_parser_test.cc)
@@ -66,16 +69,16 @@ add_executable(logger_test tests/logger_test.cc)
 add_executable(dispatcher_test tests/dispatcher_test.cc)
 target_link_libraries(request_parser_test request_parser_lib logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(request_handler_test request_handler_lib request_parser_lib logger_lib
-  nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log)
+  nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log ZLIB::ZLIB)
 target_link_libraries(reply_test reply_lib logger_lib gtest_main Boost::system Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_parser_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_statement_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
-target_link_libraries(session_test session_lib request_parser_lib nginx_config nginx_config_parser request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
-target_link_libraries(server_test server_lib session_lib request_parser_lib nginx_config request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
+target_link_libraries(session_test session_lib request_parser_lib nginx_config nginx_config_parser request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log ZLIB::ZLIB)
+target_link_libraries(server_test server_lib session_lib request_parser_lib nginx_config request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log ZLIB::ZLIB)
 target_link_libraries(logger_test logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
 target_link_libraries(dispatcher_test request_handler_lib request_parser_lib logger_lib
-  nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log)
+  nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log ZLIB::ZLIB)
 
 # Update with test binary
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)

@@ -42,19 +42,20 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
     bool formatted = false;
     request_parser::result_type result;
 
-    if (strcmp(data_+strlen(data_) - 2, "\r\n") == 0) {
+    std::string data_str(data_, bytes_transferred);
+    if (data_str.substr(data_str.size() -2) == "\r\n") {
       // string is already formatted so don't format it
       std::tie(result, std::ignore) = request_parser_.parse(request_, data_, data_ + bytes_transferred);
 
     } else {
       // format string
-      std::string data = data_;
+      std::string data(data_, bytes_transferred);
       while(data.length() > 1 && data.back() != '\n')
         data.pop_back();
       boost::replace_all(data, "\n", "\r\n");
       data.append("\r\n");
       strcpy(data_, data.c_str());
-      std::tie(result, std::ignore) = request_parser_.parse(request_, data_, data_ + strlen(data_));
+      std::tie(result, std::ignore) = request_parser_.parse(request_, data_, data_ + data.size());
     }
     
     std::string d = data_;
@@ -64,6 +65,7 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
     try { logger.logRequest(request_, socket_, NOTIFICATION); } catch (...) {}
     logger.log("First line of request: " + first_line, NORMAL);
 
+    std::string request_str(data_, bytes_transferred);
     if (result == request_parser::good) { // the URL is valid
       logger.log("OK request received.", NORMAL);
 

@@ -7,6 +7,7 @@
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/static_request_handler.h"
 #include "request_handler/status_handler.h"
+#include "request_handler/redirect_handler.h"
 #include "request_handler/dispatcher.h"
 #include "http/request_parser.h"
 #include "http/request.h"
@@ -44,7 +45,8 @@ TEST_F(DispatcherTestFix, HandlerProperCreation) {
     EXPECT_EQ(dispatcher_->handlers_.count("/status"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/ucla"), 1);
-    EXPECT_EQ(dispatcher_->handlers_.size(), 6);
+    EXPECT_EQ(dispatcher_->handlers_.count("/redirect"), 1);
+    EXPECT_EQ(dispatcher_->handlers_.size(), 7);
 }
 
 // testing dispatcher return for echo handler
@@ -82,6 +84,14 @@ TEST_F(DispatcherTestFix, ProperBadHandlerReturn) {
 TEST_F(DispatcherTestFix, ProperReverseProxyHandlerReturn) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
     request_.uri_ = "/ucla";
+    std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+    EXPECT_TRUE(handler != NULL);
+}
+
+// testing dispatcher return for redirect handler
+TEST_F(DispatcherTestFix, RedirectHandlerReturn) {
+    RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
+    request_.uri_ = "/redirect";
     std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
     EXPECT_TRUE(handler != NULL);
 }

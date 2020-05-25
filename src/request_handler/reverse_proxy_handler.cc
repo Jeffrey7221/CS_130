@@ -4,6 +4,11 @@
 #include <boost/asio.hpp>
 #include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/asio.hpp>
+#include <boost/regex.hpp>
+#include <gzip/compress.h>
+#include <gzip/decompress.h>
 
 ReverseProxyHandler::ReverseProxyHandler(const std::string& location_path, const std::string& proxy_dest, int proxy_port)
     : location_path_(location_path), proxy_dest_(proxy_dest), proxy_port_(proxy_port) {}
@@ -91,8 +96,11 @@ std::shared_ptr<http::server::reply> ReverseProxyHandler::HandleRequest(const re
     http_request += "Host: " + proxy_dest_ + "\r\nConnection: close\r\n";
     // Include headers
     for (auto header : request_.headers_) {
-        if (header.first != "Host")  // This is overwritten with the proxy destination
+        if (header.first != "Host" && header.first != "Connection")  {// This is overwritten with the proxy destination
+            // Trim any carriage returns
+            boost::replace_all(header.second, "\r\n", "");
             http_request += header.first + ": " + header.second + "\r\n";
+        }
     }
     http_request += "\r\n";
 
@@ -105,7 +113,7 @@ std::shared_ptr<http::server::reply> ReverseProxyHandler::HandleRequest(const re
         logger.log("Reverse proxy handler pointing to " + proxy_dest_ + ":" + std::to_string(proxy_port_)
             + " failed proxy request write with error: " + proxy_write_error.message(), ERROR);
         return std::shared_ptr<reply>(reply::stock_reply(reply::internal_server_error));
-    }
+   } 
     boost::asio::streambuf receive_buffer;
     boost::system::error_code proxy_read_error;
     logger.log("Reading response from: " + proxy_dest_ + "...", NOTIFICATION);
@@ -118,7 +126,7 @@ std::shared_ptr<http::server::reply> ReverseProxyHandler::HandleRequest(const re
     logger.log("Succesfully obtained response from: " + proxy_dest_ + "!", NOTIFICATION);
 
     // Parse the reply
-    http::server::reply reply;
+    std::shared_ptr<http::server::reply> reply = std::make_shared<http::server::reply>();
     const char* data = boost::asio::buffer_cast<const char*>(receive_buffer.data());
     const std::string response_str(data, receive_buffer.size());
     const std::string delim = "\r\n";
@@ -133,14 +141,14 @@ std::shared_ptr<http::server::reply> ReverseProxyHandler::HandleRequest(const re
             num_counter = 0;
         }
         if (num_counter == 3) {
-            reply.code_ = static_cast<http::server::reply::status_code>(std::stoi(request_line.substr(request_pos - 2, 3)));
+            reply->code_ = static_cast<http::server::reply::status_code>(std::stoi(request_line.substr(request_pos - 2, 3)));
         }
     }
     // From the start to the end of headers (before the carriage return separating headers to body and after carriage return for request line)
     std::string headers = response_str.substr(request_line.size() + delim.size(), header_end_pos - request_line.size());
 
     // From the beginning of the body (after the carriage return separating headers and body) to the end of the response
-    reply.body_ = response_str.substr(header_end_pos + 2 * delim.size());
+    reply->body_ = response_str.substr(header_end_pos + 2 * delim.size());
 
     // Add the headers by parsing and consuming them one per line
     while (!headers.empty()) {
@@ -166,39 +174,68 @@ std::shared_ptr<http::server::reply> ReverseProxyHandler::HandleRequest(const re
             }
             current_pos++;
         }
-        reply.headers_[boost::trim_copy(header_key)] = boost::trim_copy(tmp_buf);
+        reply->headers_[boost::trim_copy(header_key)] = boost::trim_copy(tmp_buf);
         headers = headers.substr(current_pos + delim.size());
     }
 
     // If the reply contains a 302 redirect:
     // Send the request to that specified redirect URL
-    if (reply.code_ == http::server::reply::moved_temporarily) {
+    if (reply->code_ == http::server::reply::moved_temporarily || reply->code_ == http::server::reply::moved_permanently) {
         request redirect_request = request_;
-        std::string redirect_url = reply.headers_["Location"];
-        logger.log("Received redirect request to: " + redirect_url, NOTIFICATION);
-
-        std::string redirect_path;
-        int host_start = 0;
-        int path_start;
-
-        if (redirect_url.find("https://") != std::string::npos) {
-            host_start = 8;
-        } else if (redirect_url.find("http://") != std::string::npos) {
-            host_start = 7;
+        std::string redirect_uri = reply->headers_["Location"];
+        logger.log("Received redirect request to: " + redirect_uri, NOTIFICATION);
+        std::string modified_redirect_URI = uri_replace(redirect_uri, proxy_dest_, location_path_ + "/");
+        logger.log("Modified redirect URI is: " + modified_redirect_URI, NOTIFICATION);
+        if(modified_redirect_URI == redirect_uri) {      
+            logger.log("There is a loop in redirection", ERROR);
+        } else if(modified_redirect_URI != redirect_request.uri_){
+            redirect_request.uri_ = modified_redirect_URI; 
+            return HandleRequest(redirect_request);
         }
-
-        std::string tmp = redirect_url.substr(host_start); // Remove 'http(s)://' from the string
-        path_start = tmp.find("/");
-        redirect_path = tmp.substr(path_start);
-
-        logger.log("Redirect path is: " + redirect_path, NOTIFICATION);
-
-        redirect_request.uri_ = redirect_path;
-
-        return HandleRequest(redirect_request);
     }
 
-    // TODO(justinj151): Handle relative paths inside the html body
+    std::string modified_body = reply->body_;
 
-    return std::make_shared<http::server::reply>(reply);
+    if (reply->headers_.find("Content-Encoding") != reply->headers_.end() && reply->headers_["Content-Encoding"] == "gzip") {
+        logger.log("Compressing body", NOTIFICATION);
+        const char * pointer = modified_body.data();
+        std::size_t size = modified_body.size();
+        modified_body = gzip::decompress(pointer, size);
+    }
+
+    // Replace all src="/link" and href="/link" with src="/ucla/link" and href="/ucla/link"
+    append_relative_URI(modified_body, location_path_);
+
+    if (reply->headers_.find("Content-Encoding") != reply->headers_.end() && reply->headers_["Content-Encoding"] == "gzip") {
+        logger.log("Compressing body", NOTIFICATION);
+        const char * pointer = modified_body.data();
+        std::size_t size = modified_body.size();
+        reply->body_ = gzip::compress(pointer, size);
+        reply->headers_["Content-Length"] = std::to_string(reply->body_.size());
+    } else {
+        reply->body_ = modified_body;
+        reply->headers_["Content-Length"] = std::to_string(reply->body_.size());
+    }
+
+    return reply;
+}
+
+// Replace proxy_host with the relative path
+// ex: www.google.com/webhp -> /google/webhp/
+// uri: /webhp
+// proxy_host: www.google.com
+// local_path: /google
+std::string ReverseProxyHandler::uri_replace(const std::string& uri, const std::string& proxy_host, const std::string& local_path) {
+    boost::regex regex_expression(".*" + proxy_host + "/{0,1}"); 
+    return regex_replace( uri, regex_expression, local_path );
+}
+
+// Prepend all local HTML links with location_path
+void ReverseProxyHandler::append_relative_URI(std::string& body, const std::string& append) {
+  boost::regex regex_expr_trailing_slash("\\/$");
+  std::string trimmed_append = regex_replace(append, regex_expr_trailing_slash, "");
+  boost::regex regex_expr_href("href=\"/");
+  boost::regex regex_expr_src("src=\"/");
+  body = regex_replace( body, regex_expr_href, "href=\"" + trimmed_append + "/" );
+  body = regex_replace( body, regex_expr_src, "src=\"" + trimmed_append + "/" );
 }
