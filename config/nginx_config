@@ -22,14 +22,13 @@ server {
     proxy_dest www.ucla.edu;
   }
 
-  # Call /local/redirect 
   location "/local" ReverseProxyHandler {
     proxy_port 80;
     proxy_dest 35.185.213.80;
   }
 
   location "/redirect" RedirectHandler {
-    port 80
     host 35.185.213.80;
+    port 80;
   }
 }
