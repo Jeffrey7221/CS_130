@@ -16,4 +16,15 @@ server {
 
   location "/" BadRequestHandler {
   }
+
+  location "/ucla" ReverseProxyHandler {
+    proxy_port 80;
+    proxy_dest www.ucla.edu;
+  }
+
+  # Currently does not work, developing a fix
+  location "/google" ReverseProxyHandler {
+    proxy_port 80;
+    proxy_dest www.google.com/search;
+  }
 }

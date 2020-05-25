@@ -3,6 +3,7 @@
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/static_request_handler.h"
 #include "request_handler/status_handler.h"
+#include "request_handler/reverse_proxy_handler.h"
 #include "logger/logger.h"
 
 // Constructor for RequestHandlerDispatcher
@@ -23,6 +24,8 @@ RequestHandlerDispatcher::RequestHandlerDispatcher(const NginxConfig& config): c
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "status");
                     } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "BadRequestHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "bad");
+                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "ReverseProxyHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "reverse");
                     }
                 }
             }
@@ -103,6 +106,11 @@ void RequestHandlerDispatcher::createHandler(const std::shared_ptr<NginxConfigSt
         logger.log("Adding a bad request handler at path: " + path_uri, NORMAL);
         handlers_["/"] = std::shared_ptr<RequestHandler>(BadRequestHandler::Init(*(config_statement_->child_block_), "/"));
         request_handler_uri["/"] = "bad handler";
+        num_handlers++;
+    } else if (HandlerType == "reverse") {
+        logger.log("Adding a reverse proxy request handler at path: " + path_uri, NORMAL);
+        handlers_[path_uri] = std::shared_ptr<RequestHandler>(ReverseProxyHandler::Init(*(config_statement_->child_block_), path_uri));
+        request_handler_uri[path_uri] = "reverse proxy request handler";
         num_handlers++;
     } else { 
         return;

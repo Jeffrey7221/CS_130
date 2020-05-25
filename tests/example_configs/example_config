@@ -21,4 +21,9 @@ server {
   
   location "/" BadRequestHandler {
   }
+
+  location "/ucla" ReverseProxyHandler {
+    proxy_port 80;
+    proxy_dest www.ucla.edu;
+  }
 }
