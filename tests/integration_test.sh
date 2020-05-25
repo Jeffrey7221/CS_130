@@ -140,7 +140,6 @@ rm ./test_file.txt ./response_file.txt ./response_header.txt
 
 # TEST 5 (200 OK) on a GET to a static text file
 curl -sS "http://localhost:$PORT_NUM/static/example_data.txt" -o "response_file.txt"
-
 # Check for matching file contents
 
 sed -i '$d' "response_file.txt"
@@ -148,7 +147,7 @@ cat response_file.txt | tr -d '\r' > response_body.txt
 diff response_body.txt ../tests/static_data/example_data.txt &>/dev/null
 
 if [[ $? -eq 0 ]]; then
-    echo "200 OK: Image GET Success (5)"; 
+    echo "200 OK: Image GET Success (5)";
 else 
     echo "200 OK: Image GET Failed (5)";
     rm ./response_file.txt ./response_body.txt ./okay_header.txt ./bad_header.txt ./integration_config.txt
@@ -209,6 +208,47 @@ fi
 
 # clean up test 7 files
 rm ./response_file.txt ./test_file.txt 
+
+# TEST 8 Proxy Request Handler testing that it sends back the right file from a proxy server.
+echo "
+server {
+  port 8000;
+
+  location \"/reverse\" ReverseProxyHandler {
+      proxy_port 9000;
+      proxy_dest localhost;
+  }
+}
+" > "proxy_integration_config.txt"
+
+../build/bin/server ./proxy_integration_config.txt 2>&1 &
+pid_server2=$!
+sleep 1
+
+curl -isS http://localhost:9000/static/example_data.txt > expected_response.txt
+curl -isS http://localhost:8000/reverse/static/example_data.txt > response_file.txt
+
+# expect both of these responses to be the same
+diff expected_response.txt response_file.txt
+if [[ $? -eq 0 ]]; then
+    echo "Proxy Request Handler test succeeded"
+else
+    echo "Proxy Request Handler test failed"
+    echo "Expected response:"
+    echo $(cat expected_response.txt)
+    echo "Received response from proxy:"
+    echo $(cat response_file.txt)
+    rm ./response_file.txt ./okay_header.txt ./bad_header.txt ./integration_config.txt ./expected_response.txt ./proxy_integration_config.txt
+    kill -9 $(( $pid_server + 1 ))
+    kill $pid_server2 2>/dev/null
+    exit 1;
+fi
+
+# clean up test 8 files and server
+kill $pid_server2 2>/dev/null
+rm ./response_file.txt ./expected_response.txt ./proxy_integration_config.txt
+
+
 
 # kill the server, clean up global files, and end the integration test
 rm ./integration_config.txt ./okay_header.txt ./bad_header.txt ./not_found_header.txt
