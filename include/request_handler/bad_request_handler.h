@@ -5,13 +5,12 @@
 
 using http::server::reply;
 
-// Request handler for echo requests
-
+// Request handler for 404 Not Found
 class BadRequestHandler : public RequestHandler {
     public:
         static RequestHandler* Init(const NginxConfig& config, const std::string location_path);
 
-            // derived from base class RequestHandler
+        // derived from base class RequestHandler
         std::shared_ptr<http::server::reply> HandleRequest(const request& request_) override;  
 };
 

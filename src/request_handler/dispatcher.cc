@@ -1,10 +1,11 @@
 #include "request_handler/dispatcher.h"
 #include "request_handler/bad_request_handler.h"
 #include "request_handler/echo_request_handler.h"
+#include "request_handler/health_handler.h"
+#include "request_handler/redirect_handler.h"
+#include "request_handler/reverse_proxy_handler.h"
 #include "request_handler/static_request_handler.h"
 #include "request_handler/status_handler.h"
-#include "request_handler/reverse_proxy_handler.h"
-#include "request_handler/redirect_handler.h"
 #include "logger/logger.h"
 
 // Constructor for RequestHandlerDispatcher
@@ -17,24 +18,24 @@ RequestHandlerDispatcher::RequestHandlerDispatcher(const NginxConfig& config): c
         if(config_.statements_[i]->tokens_[0] == "server" && config_.statements_[i]->tokens_.size() == 1) {
             for(int j = 0; j < config_.statements_[i]->child_block_->statements_.size(); j++) {
                 if (config_.statements_[i]->child_block_->statements_[j]->tokens_.size() > 2) {
-                    if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "EchoHandler") {
+                    if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "BadRequestHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "bad");
+                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "EchoHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "echo");
+                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "HealthHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "health");
+                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "RedirectHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "redirect");
+                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "ReverseProxyHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "reverse");
                     } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StaticHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "static");
                     } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StatusHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "status");
-                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "BadRequestHandler") {
-                        createHandler(config_.statements_[i]->child_block_->statements_[j], "bad");
-                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "ReverseProxyHandler") {
-                        createHandler(config_.statements_[i]->child_block_->statements_[j], "reverse");
-                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "RedirectHandler") {
-                        createHandler(config_.statements_[i]->child_block_->statements_[j], "redirect");
                     }
                 }
             }
-            
         }
-        
     }
 }
 
@@ -89,11 +90,31 @@ void RequestHandlerDispatcher::createHandler(const std::shared_ptr<NginxConfigSt
         return;
     }
     
-    // create the echo and static handlers, and increment the handlers counter
-    if(HandlerType == "echo") {
+    // create handlers, and increment their counts
+    if (HandlerType == "bad") {
+        logger.log("Adding a bad request handler at path: " + path_uri, NORMAL);
+        handlers_["/"] = std::shared_ptr<RequestHandler>(BadRequestHandler::Init(*(config_statement_->child_block_), "/"));
+        request_handler_uri["/"] = "bad handler";
+        num_handlers++;
+    } else if(HandlerType == "echo") {
         logger.log("Adding an echo handler at path: " + path_uri, NORMAL);
         handlers_[path_uri] = std::shared_ptr<RequestHandler>(EchoRequestHandler::Init(*(config_statement_->child_block_), path_uri));
         request_handler_uri[path_uri] = "echo handler";
+        num_handlers++;
+    } else if(HandlerType == "health") {
+        logger.log("Adding a health handler at path: " + path_uri, NORMAL);
+        handlers_[path_uri] = std::shared_ptr<RequestHandler>(HealthHandler::Init(*(config_statement_->child_block_), path_uri));
+        request_handler_uri[path_uri] = "health handler";
+        num_handlers++;
+    } else if (HandlerType == "redirect") {
+        logger.log("Adding a redirect request handler at path: " + path_uri, NORMAL);
+        handlers_[path_uri] = std::shared_ptr<RequestHandler>(RedirectHandler::Init(*(config_statement_->child_block_), path_uri));
+        request_handler_uri[path_uri] = "redirect handler";
+        num_handlers++;
+    } else if (HandlerType == "reverse") {
+        logger.log("Adding a reverse proxy request handler at path: " + path_uri, NORMAL);
+        handlers_[path_uri] = std::shared_ptr<RequestHandler>(ReverseProxyHandler::Init(*(config_statement_->child_block_), path_uri));
+        request_handler_uri[path_uri] = "reverse proxy request handler";
         num_handlers++;
     } else if (HandlerType == "static") {
         logger.log("Adding an static handler at path: " + path_uri, NORMAL);
@@ -105,26 +126,10 @@ void RequestHandlerDispatcher::createHandler(const std::shared_ptr<NginxConfigSt
         handlers_[path_uri] = std::shared_ptr<RequestHandler>(StatusRequestHandler::Init(*(config_statement_->child_block_), path_uri));
         request_handler_uri[path_uri] = "status handler";
         num_handlers++;
-    } else if (HandlerType == "bad") {
-        logger.log("Adding a bad request handler at path: " + path_uri, NORMAL);
-        handlers_["/"] = std::shared_ptr<RequestHandler>(BadRequestHandler::Init(*(config_statement_->child_block_), "/"));
-        request_handler_uri["/"] = "bad handler";
-        num_handlers++;
-    } else if (HandlerType == "reverse") {
-        logger.log("Adding a reverse proxy request handler at path: " + path_uri, NORMAL);
-        handlers_[path_uri] = std::shared_ptr<RequestHandler>(ReverseProxyHandler::Init(*(config_statement_->child_block_), path_uri));
-        request_handler_uri[path_uri] = "reverse proxy request handler";
-        num_handlers++;
-    } else if (HandlerType == "redirect") {
-        logger.log("Adding a redirect request handler at path: " + path_uri, NORMAL);
-        handlers_[path_uri] = std::shared_ptr<RequestHandler>(RedirectHandler::Init(*(config_statement_->child_block_), path_uri));
-        request_handler_uri[path_uri] = "redirect handler";
-        num_handlers++;
     } else { 
         return;
     }
 }
-
 
 size_t RequestHandlerDispatcher::num_handlers = 0;
 size_t RequestHandlerDispatcher::num_requests = 0;

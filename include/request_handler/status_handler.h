@@ -6,16 +6,17 @@
 
 class StatusRequestHandler : public RequestHandler  {
 
-public:
-	StatusRequestHandler(const NginxConfig &config);
+	public:
+		StatusRequestHandler(const NginxConfig &config);
 
-	static RequestHandler* Init(const NginxConfig& config, const std::string location_path);
+		static RequestHandler* Init(const NginxConfig& config, const std::string location_path);
 
-	std::shared_ptr<reply> HandleRequest(const request& request_) override;  
+		std::shared_ptr<reply> HandleRequest(const request& request_) override;  
 
-private:
-	std::string display_content;
-	std::string request_handler_info;
-	std::string request_info;
+	private:
+		std::string display_content;
+		std::string request_handler_info;
+		std::string request_info;
 };
+
 #endif

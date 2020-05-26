@@ -5,21 +5,14 @@ foo "bar";
 server {
   port 8080;
   
-  location "/static_2" StaticHandler {
-    root /data;
-  }
-
-  location "/static" StaticHandler {
-    root /data;
-  }
-
-  location "/status" StatusHandler {
+  location "/" BadRequestHandler {
   }
 
   location "/echo" EchoHandler {
   }
-  
-  location "/" BadRequestHandler {
+
+  location "/redirect" RedirectHandler {
+    host localhost;
   }
 
   location "/ucla" ReverseProxyHandler {
@@ -27,7 +20,14 @@ server {
     proxy_dest www.ucla.edu;
   }
 
-  location "/redirect" RedirectHandler {
-    host localhost;
+  location "/static" StaticHandler {
+    root /data;
+  }
+  
+  location "/static_2" StaticHandler {
+    root /data;
+  }
+
+  location "/status" StatusHandler {
   }
 }

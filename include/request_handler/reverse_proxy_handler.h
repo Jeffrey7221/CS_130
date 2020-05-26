@@ -6,14 +6,14 @@
 using http::server::reply;
 
 // Request handler for reverse proxy requests
-
 class ReverseProxyHandler : public RequestHandler {
     public:
         ReverseProxyHandler(const std::string& location_path, const std::string& proxy_dest, int proxy_port);
         static RequestHandler* Init(const NginxConfig& config, const std::string location_path);
 
-            // derived from base class RequestHandler
+        // derived from base class RequestHandler
         std::shared_ptr<http::server::reply> HandleRequest(const request& request_) override;
+    
     private:
         std::string uri_replace(const std::string& uri, const std::string& proxy_host, const std::string& local_path);
         void append_relative_URI(std::string& body, const std::string& append);

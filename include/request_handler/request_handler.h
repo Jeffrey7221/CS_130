@@ -11,7 +11,6 @@ using http::server::request;
 using http::server::reply;
 
 // Create an abstract Request Handler class 
-//  Used for EchoRequestHandler and StaticRequestHandler
 class RequestHandler {
     public:
         // Pure virtual function that will be defined in derived classes

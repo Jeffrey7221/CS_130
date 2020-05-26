@@ -6,7 +6,7 @@ project(wfh-web-server)
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     message(FATAL_ERROR "In-source builds not allowed.
     Please make a new directory (called a build directory) and run CMake from there.
-    You may need to remove CMakeCache.txt." )
+    You may need to remove CMakeCache.txt.")
 endif()
 
 # Turn on debug builds if we are building in a devel shell
@@ -47,14 +47,16 @@ add_library(nginx_config_parser src/config_parser/nginx_config_parser.cc)
 add_library(nginx_config_statement src/config_parser/nginx_config_statement.cc)
 add_library(logger_lib src/logger/logger.cc)
 add_library(request_handler_lib src/request_handler/echo_request_handler.cc 
-  src/request_handler/static_request_handler.cc src/request_handler/dispatcher.cc 
-  src/request_handler/status_handler.cc src/request_handler/bad_request_handler.cc
-  src/request_handler/reverse_proxy_handler.cc src/request_handler/redirect_handler.cc)
+    src/request_handler/static_request_handler.cc src/request_handler/dispatcher.cc 
+    src/request_handler/status_handler.cc src/request_handler/bad_request_handler.cc
+    src/request_handler/reverse_proxy_handler.cc src/request_handler/redirect_handler.cc
+    src/request_handler/health_handler.cc)
 
 # Update executable name, srcs, and deps
 add_executable(server src/server_main.cc)
-target_link_libraries(server server_lib session_lib request_parser_lib nginx_config nginx_config_parser nginx_config_statement logger_lib request_handler_lib
-  Boost::system Boost::filesystem Boost::regex Boost::log_setup Boost::log ZLIB::ZLIB)
+target_link_libraries(server server_lib session_lib request_parser_lib
+    nginx_config nginx_config_parser nginx_config_statement logger_lib request_handler_lib
+    Boost::system Boost::filesystem Boost::regex Boost::log_setup Boost::log ZLIB::ZLIB)
 
 # Update test executable name, srcs, and deps
 add_executable(request_parser_test tests/request_parser_test.cc)
@@ -69,16 +71,18 @@ add_executable(logger_test tests/logger_test.cc)
 add_executable(dispatcher_test tests/dispatcher_test.cc)
 target_link_libraries(request_parser_test request_parser_lib logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(request_handler_test request_handler_lib request_parser_lib logger_lib
-  nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log ZLIB::ZLIB)
+    nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log ZLIB::ZLIB)
 target_link_libraries(reply_test reply_lib logger_lib gtest_main Boost::system Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_parser_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_statement_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
-target_link_libraries(session_test session_lib request_parser_lib nginx_config nginx_config_parser request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log ZLIB::ZLIB)
-target_link_libraries(server_test server_lib session_lib request_parser_lib nginx_config request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log ZLIB::ZLIB)
+target_link_libraries(session_test session_lib request_parser_lib nginx_config nginx_config_parser
+    request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log ZLIB::ZLIB)
+target_link_libraries(server_test server_lib session_lib request_parser_lib nginx_config
+    request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log ZLIB::ZLIB)
 target_link_libraries(logger_test logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
 target_link_libraries(dispatcher_test request_handler_lib request_parser_lib logger_lib
-  nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log ZLIB::ZLIB)
+    nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log ZLIB::ZLIB)
 
 # Update with test binary
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -95,9 +99,9 @@ gtest_discover_tests(dispatcher_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DI
 # Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)
 generate_coverage_report(TARGETS server server_lib request_handler_lib reply_lib request_parser_lib
-  nginx_config nginx_config_parser nginx_config_statement session_lib logger_lib
-  TESTS request_parser_test request_handler_test nginx_config_test nginx_config_parser_test
-  nginx_config_statement_test reply_test session_test server_test logger_test dispatcher_test)
+    nginx_config nginx_config_parser nginx_config_statement session_lib logger_lib
+    TESTS request_parser_test request_handler_test nginx_config_test nginx_config_parser_test
+    nginx_config_statement_test reply_test session_test server_test logger_test dispatcher_test)
 
 # Update with integration tests
 add_test(NAME integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_test.sh)

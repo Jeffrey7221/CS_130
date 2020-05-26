@@ -20,4 +20,3 @@ std::shared_ptr<reply> EchoRequestHandler::HandleRequest(const request& request_
 
     return rep;
 }  
-

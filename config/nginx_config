@@ -1,20 +1,21 @@
-# Format of config file we use for our webserver
+# Webserver config for docker / deployment
 
 server {
   port 80;
   server_name foo.com;
 
-  location "/static" StaticHandler {
-    root /data;
-  }
-
-  location "/status" StatusHandler {
+  location "/" BadRequestHandler {
   }
 
   location "/echo" EchoHandler {
   }
 
-  location "/" BadRequestHandler {
+  location "/health" HealthHandler {
+  }
+
+  location "/apache" ReverseProxyHandler {
+    proxy_port 80;
+    proxy_dest apache.org;
   }
 
   location "/ucla" ReverseProxyHandler {
@@ -22,8 +23,10 @@ server {
     proxy_dest www.ucla.edu;
   }
 
-  location "/apache" ReverseProxyHandler {
-    proxy_port 80;
-    proxy_dest apache.org;
+  location "/static" StaticHandler {
+    root /data;
+  }
+
+  location "/status" StatusHandler {
   }
 }

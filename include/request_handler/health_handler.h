@@ -1,12 +1,12 @@
-#ifndef ECHO_REQUEST_HANDLER_H
-#define ECHO_REQUEST_HANDLER_H
+#ifndef HEALTH_HANDLER_H
+#define HEALTH_HANDLER_H
 
 #include "request_handler/request_handler.h"
 
 using http::server::reply;
 
-// Request handler for echo requests
-class EchoRequestHandler : public RequestHandler {
+// Return 200 OK as Health Ping
+class HealthHandler : public RequestHandler {
     public:
         static RequestHandler* Init(const NginxConfig& config, const std::string location_path);
 

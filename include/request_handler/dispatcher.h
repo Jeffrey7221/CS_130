@@ -23,13 +23,13 @@ class RequestHandlerDispatcher {
         static std::map<std::string, std::vector<int>> request_code_received_; // this ideally should go in session, but due to undefined reference errors, I cannot fix this. So TODO is move this variable into session
         static size_t num_handlers; //make variable static so status_hanlder can access it
         static size_t num_requests; //make variable static so status_hanlder can access it
+    
     private: 
         void createHandler(const std::shared_ptr<NginxConfigStatement> config_statement_, std::string HandlerType);
 
         // private variables
         std::map<std::string, std::shared_ptr<RequestHandler>> handlers_;
         NginxConfig config_;
-        
 
 };
 

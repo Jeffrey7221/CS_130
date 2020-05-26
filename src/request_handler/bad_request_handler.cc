@@ -6,17 +6,17 @@ RequestHandler* BadRequestHandler::Init(const NginxConfig& config, const std::st
     return new BadRequestHandler();
 }
 
-// creates HTTP reply for all incoming echo requests
+// creates HTTP reply for 404 requests
 std::shared_ptr<reply> BadRequestHandler::HandleRequest(const request& request_) {
 
     Logger& logger = Logger::getInstance(); 
     logger.log("Constructing a 404 Not Found HTTP reply for bad echo request", NORMAL);
-    
+
     std::string not_found =
-  "<html>"
-  "<head><title>Not Found</title></head>"
-  "<body><h1>404 Not Found</h1></body>"
-  "</html>";
+        "<html>"
+        "<head><title>Not Found</title></head>"
+        "<body><h1>404 Not Found</h1></body>"
+        "</html>";
 
     std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());
 
@@ -25,4 +25,4 @@ std::shared_ptr<reply> BadRequestHandler::HandleRequest(const request& request_)
     rep->headers_["Content-Length"] = std::to_string(not_found.size());
     rep->headers_["Content-Type"] = "text/html";
     return rep;
-}  
+}
