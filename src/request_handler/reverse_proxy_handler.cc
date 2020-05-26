@@ -232,8 +232,10 @@ std::string ReverseProxyHandler::uri_replace(const std::string& uri, const std::
 
 // Prepend all local HTML links with location_path
 void ReverseProxyHandler::append_relative_URI(std::string& body, const std::string& append) {
-  boost::regex regex_expr_trailing_slash("\\/$");
-  std::string trimmed_append = regex_replace(append, regex_expr_trailing_slash, "");
+  std::string trimmed_append = append;
+  if (append[append.size() -1] == '/') {
+      trimmed_append = append.substr(0, append.size()-1);
+  }
   boost::regex regex_expr_href("href=\"/");
   boost::regex regex_expr_src("src=\"/");
   body = regex_replace( body, regex_expr_href, "href=\"" + trimmed_append + "/" );

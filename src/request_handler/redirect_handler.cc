@@ -9,13 +9,9 @@ RequestHandler* RedirectHandler::Init(const NginxConfig& config, const std::stri
     std::string host = "";
     int port = 0;
     for(int i = 0; i < config.statements_.size(); i++) {
-        logger.log("Key inside config loop: " + config.statements_[i]->tokens_[0], NOTIFICATION);
-        logger.log("Value inside config loop: " + config.statements_[i]->tokens_[1], NOTIFICATION);
         if (config.statements_[i]->tokens_.size() == 2 && config.statements_[i]->tokens_[0] == "host") {
             host = config.statements_[i]->tokens_[1];
-            logger.log("Host before replace all: " + host, NOTIFICATION);
             boost::replace_all(host, "/", "");
-            logger.log("Host after replace all: " + host, NOTIFICATION);
         } 
     }
     logger.log("Host for redirect is: " + host, NOTIFICATION);

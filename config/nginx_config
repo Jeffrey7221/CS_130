@@ -22,13 +22,8 @@ server {
     proxy_dest www.ucla.edu;
   }
 
-  location "/local" ReverseProxyHandler {
+  location "/apache" ReverseProxyHandler {
     proxy_port 80;
-    proxy_dest 35.185.213.80;
-  }
-
-  location "/redirect" RedirectHandler {
-    host 35.185.213.80;
-    port 80;
+    proxy_dest apache.org;
   }
 }
