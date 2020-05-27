@@ -29,7 +29,6 @@ TEST_F(RequestParserTestFix, IndeterminateRequest) {
 	EXPECT_EQ(request_parser_result_, http::server::request_parser::indeterminate);
 }
 
-
 // test bad http request due to too many slashes
 TEST_F(RequestParserTestFix, TooManySlash) {
 
@@ -76,7 +75,6 @@ TEST_F(RequestParserTestFix, BadMinor) {
 
 	EXPECT_EQ(request_parser_result_, http::server::request_parser::bad);
 }
-
 
 // tests leading slash
 TEST_F(RequestParserTestFix, BadFirstSlash) {
@@ -190,7 +188,6 @@ TEST_F(RequestParserTestFix, HttiTest) {
 	EXPECT_EQ(request_parser_result_, http::server::request_parser::bad);
 }
 
-
 // tests on missing 1 newline
 TEST_F(RequestParserTestFix, IncompleteCrlf1n) {
 
@@ -233,7 +230,8 @@ TEST_F(RequestParserTestFix, IncompleteCrlf2n) {
 		request_parser_.parse(request_,incoming_request, incoming_request + strlen(incoming_request));
 		
 	EXPECT_EQ(request_parser_result_, http::server::request_parser::bad);
-} 
+}
+
 // tests on missing 3 newline
 TEST_F(RequestParserTestFix, IncompleteCrlf3n) {
 
@@ -244,6 +242,7 @@ TEST_F(RequestParserTestFix, IncompleteCrlf3n) {
 		
 	EXPECT_EQ(request_parser_result_, http::server::request_parser::bad);
 }
+
 // tests on missing 3 r
 TEST_F(RequestParserTestFix, IncompleteCrlf3r) {
 
@@ -254,7 +253,6 @@ TEST_F(RequestParserTestFix, IncompleteCrlf3r) {
 		
 	EXPECT_EQ(request_parser_result_, http::server::request_parser::bad);
 }
-
 
 // test header
 TEST_F(RequestParserTestFix, MultiHeader) {
@@ -299,7 +297,6 @@ TEST_F(RequestParserTestFix, badHeaderClrfn) {
 	EXPECT_EQ(request_parser_result_, http::server::request_parser::bad);
 }
 
-
 // bad header content containing special char
 TEST_F(RequestParserTestFix, badHeaderContentSpecial) {
 
@@ -310,8 +307,6 @@ TEST_F(RequestParserTestFix, badHeaderContentSpecial) {
 		
 	EXPECT_EQ(request_parser_result_, http::server::request_parser::bad);
 }
-
-
 
 // tests for missing second Header
 TEST_F(RequestParserTestFix, missingSecondHeader) {
@@ -324,7 +319,6 @@ TEST_F(RequestParserTestFix, missingSecondHeader) {
 	EXPECT_EQ(request_parser_result_, http::server::request_parser::bad);
 }
 
-
 // tests for extraspace
 TEST_F(RequestParserTestFix, extraSpace) {
 
@@ -335,5 +329,3 @@ TEST_F(RequestParserTestFix, extraSpace) {
 		
 	EXPECT_EQ(request_parser_result_, http::server::request_parser::good);
 }
-
-

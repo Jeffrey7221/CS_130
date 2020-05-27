@@ -21,32 +21,41 @@ class DispatcherTestFix : public ::testing::Test {
             parser.Parse("./example_configs/example_config2", &no_location);
         }
 
-    http::server::request_parser request_parser_;
-    http::server::request request_;
-    http::server::request_parser::result_type request_parser_result_;
-    std::shared_ptr<http::server::reply> reply_;
-    // configuring static root directories
-    NginxConfigParser parser;
-    NginxConfig out_config;
-    NginxConfig no_location;
+        http::server::request_parser request_parser_;
+        http::server::request request_;
+        http::server::request_parser::result_type request_parser_result_;
+        std::shared_ptr<http::server::reply> reply_;
+        // configuring static root directories
+        NginxConfigParser parser;
+        NginxConfig out_config;
+        NginxConfig no_location;
 
-    // comparing static file contents
-    std::ifstream file;
-    std::string file_body;
-    char chr;
+        // comparing static file contents
+        std::ifstream file;
+        std::string file_body;
+        char chr;
 };
 
 // testing dispatcher creation
 TEST_F(DispatcherTestFix, HandlerProperCreation) {
 	RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
+    EXPECT_EQ(dispatcher_->handlers_.count("/"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/echo"), 1);
+    EXPECT_EQ(dispatcher_->handlers_.count("/health"), 1);
+    EXPECT_EQ(dispatcher_->handlers_.count("/redirect"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/static"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/static_2"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/status"), 1);
-    EXPECT_EQ(dispatcher_->handlers_.count("/"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/ucla"), 1);
-    EXPECT_EQ(dispatcher_->handlers_.count("/redirect"), 1);
-    EXPECT_EQ(dispatcher_->handlers_.size(), 7);
+    EXPECT_EQ(dispatcher_->handlers_.size(), 8);
+}
+
+// testing for no handlers with empty config
+TEST_F(DispatcherTestFix, NoConfigNoHandler) {
+    RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(no_location);
+    request_.uri_ = "/";
+    std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+    EXPECT_TRUE(handler == NULL);
 }
 
 // testing dispatcher return for echo handler
@@ -72,10 +81,18 @@ TEST_F(DispatcherTestFix, ProperStatusHandlerReturn) {
     EXPECT_TRUE(handler != NULL);
 }
 
-// testing dispatcher return for echo handler
+// testing dispatcher return for bad handler
 TEST_F(DispatcherTestFix, ProperBadHandlerReturn) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
     request_.uri_ = "/";
+    std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+    EXPECT_TRUE(handler != NULL);
+}
+
+// testing dispatcher return for health handler
+TEST_F(DispatcherTestFix, HealthHandlerReturn) {
+    RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
+    request_.uri_ = "/health";
     std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
     EXPECT_TRUE(handler != NULL);
 }

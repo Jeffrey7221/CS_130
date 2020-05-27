@@ -67,6 +67,33 @@ TEST_F(RequestHandlerTestFix, EchoPost) {
 	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
 }
 
+// Testing health ping request handling
+TEST_F(RequestHandlerTestFix, HealthHandlerTest) {
+
+	HealthHandler health_handler_;
+
+	reply_ = health_handler_.HandleRequest(request_);
+
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->body_, "OK");
+}
+
+// Testing bad requesthandling
+TEST_F(RequestHandlerTestFix, BadRequestHandlerTest) {
+	
+	BadRequestHandler bad_handler_;
+	std::string not_found =
+        "<html>"
+        "<head><title>Not Found</title></head>"
+        "<body><h1>404 Not Found</h1></body>"
+        "</html>";
+
+	reply_ = bad_handler_.HandleRequest(request_);
+
+	EXPECT_EQ(reply_->code_, http::server::reply::not_found);
+	EXPECT_EQ(reply_->body_, not_found);
+}
+
 // testing basic static_handler, should work given a valid path configuration and file
 TEST_F(RequestHandlerTestFix, GoodStaticHandle) {
 
@@ -166,7 +193,7 @@ TEST_F(RequestHandlerTestFix, StaticFileNotFound) {
 	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
 }
 
-
+// calling status handler works
 TEST_F(RequestHandlerTestFix, StatusHandler) {
 
 	char incoming_request[1024] = "GET /index.html HTTP/1.1\r\n\r\n";
@@ -303,16 +330,4 @@ TEST_F(RequestHandlerTestFix, RedirectHandlerTest) {
 	EXPECT_EQ(reply_->code_, http::server::reply::moved_temporarily);
 	EXPECT_EQ(reply_->headers_["Location"], "http://" + host + "/static/index.html");
 	EXPECT_EQ(reply_->body_, "HTTP/1.1 302 Found\r\nLocation: " + reply_->headers_["Location"] + "\r\n\r\n");
-}
-
-TEST_F(RequestHandlerTestFix, HealthHandlerTest) {
-	char incoming_request[1024] = "GET /health HTTP/1.1\r\n\r\n";
-	std::string host = "localhost";
-	int port = 8080;
-	HealthHandler health_handler_;
-
-	reply_ = health_handler_.HandleRequest(request_);
-
-	EXPECT_EQ(reply_->code_, http::server::reply::ok);
-	EXPECT_EQ(reply_->body_, "OK");
 }

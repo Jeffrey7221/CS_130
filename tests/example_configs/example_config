@@ -11,6 +11,9 @@ server {
   location "/echo" EchoHandler {
   }
 
+  location "/health" HealthHandler {
+  }
+
   location "/redirect" RedirectHandler {
     host localhost;
   }
