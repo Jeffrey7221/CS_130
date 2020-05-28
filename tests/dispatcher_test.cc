@@ -76,6 +76,7 @@ TEST_F(DispatcherTestFix, ProperStaticHandlerReturn) {
     EXPECT_TRUE(handler != NULL);
 }
 
+// testing dispatcher return for status handler
 TEST_F(DispatcherTestFix, ProperStatusHandlerReturn) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
     request_.uri_ = "/status";
@@ -83,10 +84,18 @@ TEST_F(DispatcherTestFix, ProperStatusHandlerReturn) {
     EXPECT_TRUE(handler != NULL);
 }
 
-// testing dispatcher return for echo handler
+// testing dispatcher return for not found handler
 TEST_F(DispatcherTestFix, ProperNotFoundHandlerReturn) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
     request_.uri_ = "/";
+    std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+    EXPECT_TRUE(handler != NULL);
+}
+
+// testing dispatcher return for bad request handler
+TEST_F(DispatcherTestFix, ProperBadRequestHandlerReturn) {
+    RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
+    request_.uri_ = "/badrequest";
     std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
     EXPECT_TRUE(handler != NULL);
 }

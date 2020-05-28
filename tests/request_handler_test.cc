@@ -68,6 +68,27 @@ TEST_F(RequestHandlerTestFix, EchoPost) {
 	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(reply_->body_.size()));
 }
 
+// testing basic functionality of the bad request handler
+TEST_F(RequestHandlerTestFix, BadRequest) {
+
+	char incoming_request[1024] = "ASDF\r\n\r\n";
+	BadRequestHandler bad_request_handler;
+
+	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	request_.uri_ = "/badrequest";
+	reply_ = bad_request_handler.HandleRequest(request_);
+
+	std::string bad_request =
+        "<html>"
+        "<head><title>Bad Request</title></head>"
+        "<body><h1>400 Bad Request</h1></body>"
+        "</html>";
+
+	EXPECT_EQ(reply_->code_, http::server::reply::bad_request);
+	EXPECT_EQ(reply_->body_, bad_request);
+}
+
 // Testing health ping request handling
 TEST_F(RequestHandlerTestFix, HealthHandlerTest) {
 
@@ -79,7 +100,23 @@ TEST_F(RequestHandlerTestFix, HealthHandlerTest) {
 	EXPECT_EQ(reply_->body_, "OK");
 }
 
-// Testing bad requesthandling
+// Testing bad request handling
+TEST_F(RequestHandlerTestFix, BadRequestHandlerTest) {
+	
+	BadRequestHandler bad_request_handler;
+	std::string bad_request =
+        "<html>"
+        "<head><title>Bad Request</title></head>"
+        "<body><h1>400 Bad Request</h1></body>"
+        "</html>";
+
+	reply_ = bad_request_handler.HandleRequest(request_);
+
+	EXPECT_EQ(reply_->code_, http::server::reply::bad_request);
+	EXPECT_EQ(reply_->body_, bad_request);
+}
+
+// Testing not found request handling
 TEST_F(RequestHandlerTestFix, NotFoundHandlerTest) {
 	
 	NotFoundRequestHandler not_found_handler;
