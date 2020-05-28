@@ -4,6 +4,7 @@
 #include "config_parser/nginx_config_parser.h"
 #include "config_parser/nginx_config_statement.h"
 #include "request_handler/bad_request_handler.h"
+#include "request_handler/not_found_handler.h"
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/health_handler.h"
 #include "request_handler/redirect_handler.h"
@@ -79,16 +80,16 @@ TEST_F(RequestHandlerTestFix, HealthHandlerTest) {
 }
 
 // Testing bad requesthandling
-TEST_F(RequestHandlerTestFix, BadRequestHandlerTest) {
+TEST_F(RequestHandlerTestFix, NotFoundHandlerTest) {
 	
-	BadRequestHandler bad_handler_;
+	NotFoundRequestHandler not_found_handler;
 	std::string not_found =
         "<html>"
         "<head><title>Not Found</title></head>"
         "<body><h1>404 Not Found</h1></body>"
         "</html>";
 
-	reply_ = bad_handler_.HandleRequest(request_);
+	reply_ = not_found_handler.HandleRequest(request_);
 
 	EXPECT_EQ(reply_->code_, http::server::reply::not_found);
 	EXPECT_EQ(reply_->body_, not_found);

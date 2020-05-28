@@ -5,7 +5,7 @@ foo "bar";
 server {
   port 8080;
   
-  location "/" BadRequestHandler {
+  location "/" NotFoundHandler {
   }
 
   location "/echo" EchoHandler {
@@ -32,5 +32,8 @@ server {
   }
 
   location "/status" StatusHandler {
+  }
+
+  location "/badrequest" BadRequestHandler {
   }
 }

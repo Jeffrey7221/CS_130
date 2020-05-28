@@ -4,7 +4,7 @@ server {
   port 8080;
   server_name foo.com;
 
-  location "/" BadRequestHandler {
+  location "/" NotFoundHandler {
   }
 
   location "/echo" EchoHandler {
@@ -28,5 +28,8 @@ server {
   }
 
   location "/status" StatusHandler {
+  }
+
+  location "/badrequest" BadRequestHandler {
   }
 }

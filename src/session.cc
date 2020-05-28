@@ -90,12 +90,22 @@ int session::handle_read(const boost::system::error_code& error, size_t bytes_tr
         boost::asio::placeholders::bytes_transferred
       ));
       return 0;
-    } else if (result == request_parser::bad) { // the URL is invalid
+    } else if (result == request_parser::bad) { // the HTTP request is invalid
       logger.log("Bad request received.", NORMAL);
-      rep = std::shared_ptr<reply>(reply::stock_reply(reply::bad_request));
 
-      //map this url to a response code for status Request Handler
-      RequestHandlerDispatcher::request_code_received_[request_.uri_].push_back(rep->code_);
+      // //map this url to a response code for status Request Handler
+      // RequestHandlerDispatcher::request_code_received_[request_.uri_].push_back(rep->code_);
+
+      request_.uri_ = "/badrequest";
+      // get request handler
+      handler = dispatcher_->dispatch(request_);
+
+      if (handler == NULL) {
+        rep = std::shared_ptr<reply>(reply::stock_reply(reply::bad_request));
+      } else {
+        // use request handler to create HTTP reply
+        rep = handler->HandleRequest(request_);
+      }
       
       // handle write portion
       boost::asio::async_write(socket_,rep->to_buffers(),

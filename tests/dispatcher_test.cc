@@ -6,6 +6,7 @@
 #include "request_handler/request_handler.h"
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/static_request_handler.h"
+#include "request_handler/not_found_handler.h"
 #include "request_handler/status_handler.h"
 #include "request_handler/redirect_handler.h"
 #include "request_handler/dispatcher.h"
@@ -47,7 +48,8 @@ TEST_F(DispatcherTestFix, HandlerProperCreation) {
     EXPECT_EQ(dispatcher_->handlers_.count("/static_2"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/status"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/ucla"), 1);
-    EXPECT_EQ(dispatcher_->handlers_.size(), 8);
+    EXPECT_EQ(dispatcher_->handlers_.count("/badrequest"), 1);
+    EXPECT_EQ(dispatcher_->handlers_.size(), 9);
 }
 
 // testing for no handlers with empty config
@@ -81,8 +83,8 @@ TEST_F(DispatcherTestFix, ProperStatusHandlerReturn) {
     EXPECT_TRUE(handler != NULL);
 }
 
-// testing dispatcher return for bad handler
-TEST_F(DispatcherTestFix, ProperBadHandlerReturn) {
+// testing dispatcher return for echo handler
+TEST_F(DispatcherTestFix, ProperNotFoundHandlerReturn) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
     request_.uri_ = "/";
     std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
@@ -113,7 +115,7 @@ TEST_F(DispatcherTestFix, RedirectHandlerReturn) {
     EXPECT_TRUE(handler != NULL);
 }
 
-// testing 404 not found error request for the bad request handler
+// testing 404 not found error request for the not found request handler
 TEST_F(DispatcherTestFix, VerifyErrorCode) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
     request_.uri_ = "/randompath";
@@ -122,7 +124,7 @@ TEST_F(DispatcherTestFix, VerifyErrorCode) {
     EXPECT_TRUE(rep->code_ == 404);
 }
 
-// testing 404 not found error request for the bad request handler
+// testing 404 not found error request for the not found request handler
 TEST_F(DispatcherTestFix, VerifyErrorCode2) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
     request_.uri_ = "/static/nonexistentfile.txt";
@@ -131,7 +133,7 @@ TEST_F(DispatcherTestFix, VerifyErrorCode2) {
     EXPECT_TRUE(rep->code_ == 404);
 }
 
-// testing 404 not found error request for the bad request handler
+// testing 404 not found error request for the not found request handler
 TEST_F(DispatcherTestFix, VerifyNoErrorCode) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
     request_.uri_ = "/echo";
