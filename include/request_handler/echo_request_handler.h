@@ -12,6 +12,7 @@ class EchoRequestHandler : public RequestHandler {
 
         // derived from base class RequestHandler
         std::shared_ptr<http::server::reply> HandleRequest(const request& request_) override;  
+
 };
 
 #endif

@@ -3,7 +3,9 @@
 
 
 RequestHandler* BadRequestHandler::Init(const NginxConfig& config, const std::string location_path) {
-    return new BadRequestHandler();
+    RequestHandler* handler = new BadRequestHandler();
+    handler->name = "BadReqHandler";
+    return handler;
 }
 
 // creates HTTP reply for malformed requests

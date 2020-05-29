@@ -21,7 +21,11 @@ RequestHandler* StaticRequestHandler::Init(const NginxConfig& config, const std:
         root.append("/");
     }
 
-    return new StaticRequestHandler(config, location_path, root);
+    RequestHandler* handler = new StaticRequestHandler(config, location_path, root);
+    handler->name = "StaticHandler";
+    return handler; 
+
+     
 }
 
 // construct HTTP reply for static requests and serve static file

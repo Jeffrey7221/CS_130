@@ -11,7 +11,9 @@ class NotFoundRequestHandler : public RequestHandler {
         static RequestHandler* Init(const NginxConfig& config, const std::string location_path);
 
         // derived from base class RequestHandler
-        std::shared_ptr<http::server::reply> HandleRequest(const request& request_) override;  
+        std::shared_ptr<http::server::reply> HandleRequest(const request& request_) override; 
+
+        std::string name = "NotFoundHandler"; 
 };
 
 #endif

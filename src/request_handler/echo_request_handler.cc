@@ -2,7 +2,10 @@
 #include "logger/logger.h"
 
 RequestHandler* EchoRequestHandler::Init(const NginxConfig& config, const std::string location_path) {
-    return new EchoRequestHandler();
+    RequestHandler* handler = new EchoRequestHandler();
+    handler->name = "EchoHandler";
+    return handler;
+
 }
 
 // creates HTTP reply for all incoming echo requests

@@ -11,6 +11,7 @@
 #include <boost/log/sources/severity_logger.hpp>
 #include <boost/log/sources/record_ostream.hpp>
 #include "http/request.h"
+#include "http/reply.h"
 #include <boost/asio.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <mutex>          // std::mutex
@@ -26,6 +27,7 @@ namespace keywords = boost::log::keywords;
 
 using boost::asio::ip::tcp;
 using http::server::request;
+using http::server::reply;
 
 // We define our own severity levels
 enum severity_level
@@ -52,6 +54,8 @@ class Logger {
         // logs details of a client's request including IP address and HTTP version
         void logRequest(request request_, tcp::socket& socket_, severity_level severity);
 
+        // log metrics for GCP Monitoring
+        void logMetrics(request request_, const std::shared_ptr<reply>& reply_, tcp::socket& socket_, std::string handler_name);
 
     protected:
         Logger();

@@ -35,7 +35,9 @@ RequestHandler* ReverseProxyHandler::Init(const NginxConfig& config, const std::
         }
     }
 
-    return new ReverseProxyHandler(location_path, proxy_dest, proxy_port);
+    RequestHandler* handler = new ReverseProxyHandler(location_path, proxy_dest, proxy_port);
+    handler->name = "ReverseProxyHandler";
+    return handler; 
 }
 
 std::shared_ptr<http::server::reply> ReverseProxyHandler::HandleRequest(const request& request_) {

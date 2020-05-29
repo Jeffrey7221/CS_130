@@ -9,6 +9,7 @@
 #include <boost/log/sources/record_ostream.hpp>
 #include "logger/logger.h"
 #include "http/request.h"
+#include "http/reply.h"
 #include <boost/asio.hpp>
 #include <boost/asio/signal_set.hpp>
 
@@ -21,6 +22,7 @@ namespace keywords = boost::log::keywords;
 
 using boost::asio::ip::tcp;
 using http::server::request;
+using http::server::reply;
 
 std::mutex g_pages_mutex;
 
@@ -83,6 +85,14 @@ void Logger::logRequest(request request_, tcp::socket& socket_, severity_level s
             break;
     }
 
+}
+
+void Logger::logMetrics(request request_, const std::shared_ptr<reply>& reply_, tcp::socket& socket_, std::string handler_name)
+{
+    std::lock_guard<std::mutex> guard(g_pages_mutex); //for critical section
+    std::string msg = "{ResponseMetrics} response_code:" + std::to_string(reply_->code_) + ", request_path:" + request_.uri_ + ", request_ip:" 
+                        + socket_.remote_endpoint().address().to_string() + ", handler_name:" + handler_name;
+    BOOST_LOG_SEV(slg, NOTIFICATION) << "<Notification>: " << msg;
 }
 
 

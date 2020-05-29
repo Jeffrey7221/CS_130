@@ -3,7 +3,9 @@
 
 
 RequestHandler* HealthHandler::Init(const NginxConfig& config, const std::string location_path) {
-    return new HealthHandler();
+    RequestHandler* handler = new HealthHandler();
+    handler->name = "HealthHandler";
+    return handler;
 }
 
 // creates HTTP reply for Health Ping

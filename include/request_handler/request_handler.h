@@ -15,6 +15,7 @@ class RequestHandler {
     public:
         // Pure virtual function that will be defined in derived classes
         virtual std::shared_ptr<reply> HandleRequest(const request& request_) = 0;
+        std::string name;
 };
 
 #endif

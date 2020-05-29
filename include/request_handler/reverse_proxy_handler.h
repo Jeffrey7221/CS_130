@@ -13,6 +13,8 @@ class ReverseProxyHandler : public RequestHandler {
 
         // derived from base class RequestHandler
         std::shared_ptr<http::server::reply> HandleRequest(const request& request_) override;
+
+        std::string name = "ReverseProxyHandler";
     
     private:
         std::string uri_replace(const std::string& uri, const std::string& proxy_host, const std::string& local_path);

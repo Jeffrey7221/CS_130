@@ -3,7 +3,9 @@
 
 
 RequestHandler* NotFoundRequestHandler::Init(const NginxConfig& config, const std::string location_path) {
-    return new NotFoundRequestHandler();
+    RequestHandler* handler = new NotFoundRequestHandler();
+    handler->name = "NotFoundHandler";
+    return handler;
 }
 
 // creates HTTP reply for 404 requests

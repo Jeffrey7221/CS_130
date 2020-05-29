@@ -15,7 +15,9 @@ RequestHandler* RedirectHandler::Init(const NginxConfig& config, const std::stri
         } 
     }
     logger.log("Host for redirect is: " + host, NOTIFICATION);
-    return new RedirectHandler(host);
+    RequestHandler* handler = new RedirectHandler(host);
+    handler->name = "RedirectHandler";
+    return handler;
 }
 
 std::shared_ptr<http::server::reply> RedirectHandler::HandleRequest(const request& request_) {

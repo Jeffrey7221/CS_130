@@ -13,6 +13,8 @@ class StatusRequestHandler : public RequestHandler  {
 
 		std::shared_ptr<reply> HandleRequest(const request& request_) override;  
 
+		std::string name = "StatusHandler";
+
 	private:
 		std::string display_content;
 		std::string request_handler_info;

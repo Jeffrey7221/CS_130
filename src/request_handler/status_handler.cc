@@ -8,7 +8,9 @@ StatusRequestHandler::StatusRequestHandler(const NginxConfig &config):
 request_handler_info(""), request_info(""),display_content("") {}
 
 RequestHandler* StatusRequestHandler::Init(const NginxConfig& config, const std::string location_path){
-    return new StatusRequestHandler(config);
+    RequestHandler* handler = new StatusRequestHandler(config);
+    handler->name = "StatusHandler";
+    return handler;
 }
 
 std::shared_ptr<reply> StatusRequestHandler::HandleRequest(const request& request_) {
