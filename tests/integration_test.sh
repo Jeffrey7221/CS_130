@@ -7,10 +7,30 @@ PORT_NUM=9000
 echo "
 server {
   port 9000;
+  location \"/\" NotFoundHandler {
+  }
+
+  location \"/echo\" EchoHandler {
+  }
+
+  location \"/health\" HealthHandler {
+  }
+
+  location \"/apache\" ReverseProxyHandler {
+    proxy_port 8080;
+    proxy_dest apache.org;
+  }
+
+  location \"/ucla\" ReverseProxyHandler {
+    proxy_port 80;
+    proxy_dest www.ucla.edu;
+  }
+
   location \"/static\" StaticHandler {
     root /tests/static_data;
   }
-  location \"/echo\" EchoHandler {
+
+  location \"/badrequest\" BadRequestHandler {
   }
 }
 " > "integration_config.txt"

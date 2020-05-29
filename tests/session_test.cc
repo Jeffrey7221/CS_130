@@ -60,14 +60,6 @@ TEST_F(SessionTestFix, ErrorCodeTest) {
 //     EXPECT_EQ(read_ret, 0);
 // }
 
-// Test that a bad request is properly handled
-TEST_F(SessionTestFix, BadRequestTest) {
-    char incoming_request[1024] = "Bad Request";
-    strcpy(sesh->data_, incoming_request);
-    int read_ret = sesh->handle_read(boost::system::error_code(), strlen(sesh->data_));
-    EXPECT_EQ(read_ret, 1);
-}
-
 // Test that the session starts up properly
 TEST_F(SessionTestFix, StartTest) {
     char incoming_request[1024] = "GET /echo HTTP/1.1\r\nHost: www.w3.org/pub/WWW/TheProject.html\r\n\r\n";

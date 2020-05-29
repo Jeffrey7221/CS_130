@@ -302,7 +302,6 @@ TEST_F(RequestHandlerTestFix, ReverseProxyHandlerSuccessHEADRequest) {
 
   	std::tie(request_parser_result_, std::ignore) =
 		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
-	std::cout << "METHOD: " << request_.method_ << std::endl;
 	reply_ = reverse_handler_.HandleRequest(request_);
 
 	EXPECT_EQ(reply_->code_, http::server::reply::ok);
