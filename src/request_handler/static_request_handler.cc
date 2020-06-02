@@ -2,6 +2,10 @@
 #include "request_handler/static_request_handler.h"
 #include "logger/logger.h"
 
+#include <memory>
+#include <string>
+
+#include "maddy/parser.h"
 
 StaticRequestHandler::StaticRequestHandler(const NginxConfig& config, const std::string location_path, const std::string root) :
     config_(config), location_path_(location_path), root_(root) {}
