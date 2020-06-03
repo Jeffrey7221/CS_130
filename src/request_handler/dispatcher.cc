@@ -2,11 +2,12 @@
 #include "request_handler/bad_request_handler.h"
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/health_handler.h"
+#include "request_handler/markdown_handler.h"
+#include "request_handler/not_found_handler.h"
 #include "request_handler/redirect_handler.h"
 #include "request_handler/reverse_proxy_handler.h"
 #include "request_handler/static_request_handler.h"
 #include "request_handler/status_handler.h"
-#include "request_handler/not_found_handler.h"
 #include "logger/logger.h"
 
 // Constructor for RequestHandlerDispatcher
@@ -25,6 +26,10 @@ RequestHandlerDispatcher::RequestHandlerDispatcher(const NginxConfig& config): c
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "echo");
                     } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "HealthHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "health");
+                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "MarkdownHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "markdown");
+                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "NotFoundHandler") {
+                        createHandler(config_.statements_[i]->child_block_->statements_[j], "missing");
                     } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "RedirectHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "redirect");
                     } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "ReverseProxyHandler") {
@@ -33,8 +38,6 @@ RequestHandlerDispatcher::RequestHandlerDispatcher(const NginxConfig& config): c
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "static");
                     } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "StatusHandler") {
                         createHandler(config_.statements_[i]->child_block_->statements_[j], "status");
-                    } else if(config_.statements_[i]->child_block_->statements_[j]->tokens_[2] == "NotFoundHandler") {
-                        createHandler(config_.statements_[i]->child_block_->statements_[j], "missing");
                     }
                 }
             }
@@ -94,12 +97,7 @@ void RequestHandlerDispatcher::createHandler(const std::shared_ptr<NginxConfigSt
     }
     
     // create handlers, and increment their counts
-    if (HandlerType == "missing") {
-        logger.log("Adding a not found request handler at path: " + path_uri, NORMAL);
-        handlers_["/"] = std::shared_ptr<RequestHandler>(NotFoundRequestHandler::Init(*(config_statement_->child_block_), "/"));
-        request_handler_uri["/"] = "not found handler";
-        num_handlers++;
-    } else if(HandlerType == "echo") {
+    if(HandlerType == "echo") {
         logger.log("Adding an echo handler at path: " + path_uri, NORMAL);
         handlers_[path_uri] = std::shared_ptr<RequestHandler>(EchoRequestHandler::Init(*(config_statement_->child_block_), path_uri));
         request_handler_uri[path_uri] = "echo handler";
@@ -108,6 +106,16 @@ void RequestHandlerDispatcher::createHandler(const std::shared_ptr<NginxConfigSt
         logger.log("Adding a health handler at path: " + path_uri, NORMAL);
         handlers_[path_uri] = std::shared_ptr<RequestHandler>(HealthHandler::Init(*(config_statement_->child_block_), path_uri));
         request_handler_uri[path_uri] = "health handler";
+        num_handlers++;
+    } else if (HandlerType == "markdown") {
+        logger.log("Adding a markdown request handler at path: " + path_uri, NORMAL);
+        handlers_[path_uri] = std::shared_ptr<RequestHandler>(MarkdownHandler::Init(*(config_statement_->child_block_), path_uri));
+        request_handler_uri[path_uri] = "markdown handler";
+        num_handlers++;
+    } else if (HandlerType == "missing") {
+        logger.log("Adding a not found request handler at path: " + path_uri, NORMAL);
+        handlers_["/"] = std::shared_ptr<RequestHandler>(NotFoundRequestHandler::Init(*(config_statement_->child_block_), "/"));
+        request_handler_uri["/"] = "not found handler";
         num_handlers++;
     } else if (HandlerType == "redirect") {
         logger.log("Adding a redirect request handler at path: " + path_uri, NORMAL);

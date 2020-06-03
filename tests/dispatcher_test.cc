@@ -4,12 +4,16 @@
 #include "config_parser/nginx_config_parser.h"
 #include "config_parser/nginx_config_statement.h"
 #include "request_handler/request_handler.h"
-#include "request_handler/echo_request_handler.h"
-#include "request_handler/static_request_handler.h"
-#include "request_handler/not_found_handler.h"
-#include "request_handler/status_handler.h"
-#include "request_handler/redirect_handler.h"
 #include "request_handler/dispatcher.h"
+#include "request_handler/bad_request_handler.h"
+#include "request_handler/echo_request_handler.h"
+#include "request_handler/health_handler.h"
+#include "request_handler/markdown_handler.h"
+#include "request_handler/not_found_handler.h"
+#include "request_handler/redirect_handler.h"
+#include "request_handler/reverse_proxy_handler.h"
+#include "request_handler/static_request_handler.h"
+#include "request_handler/status_handler.h"
 #include "http/request_parser.h"
 #include "http/request.h"
 #include "http/reply.h"
@@ -49,7 +53,8 @@ TEST_F(DispatcherTestFix, HandlerProperCreation) {
     EXPECT_EQ(dispatcher_->handlers_.count("/status"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/ucla"), 1);
     EXPECT_EQ(dispatcher_->handlers_.count("/badrequest"), 1);
-    EXPECT_EQ(dispatcher_->handlers_.size(), 9);
+    EXPECT_EQ(dispatcher_->handlers_.count("/markdown"), 1);
+    EXPECT_EQ(dispatcher_->handlers_.size(), 10);
 }
 
 // testing for no handlers with empty config
@@ -108,6 +113,14 @@ TEST_F(DispatcherTestFix, HealthHandlerReturn) {
     EXPECT_TRUE(handler != NULL);
 }
 
+// testing dispatcher return for health handler
+TEST_F(DispatcherTestFix, MarkdownHandlerReturn) {
+    RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
+    request_.uri_ = "/markdown";
+    std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
+    EXPECT_TRUE(handler != NULL);
+}
+
 // testing dispatcher return for reverse proxy handler
 TEST_F(DispatcherTestFix, ProperReverseProxyHandlerReturn) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
@@ -127,7 +140,7 @@ TEST_F(DispatcherTestFix, RedirectHandlerReturn) {
 // testing 404 not found error request for the not found request handler
 TEST_F(DispatcherTestFix, VerifyErrorCode) {
     RequestHandlerDispatcher* dispatcher_ = new RequestHandlerDispatcher(out_config);
-    request_.uri_ = "/randompath";
+    request_.uri_ = "/random_bad_path";
     std::shared_ptr<RequestHandler> handler = dispatcher_->dispatch(request_);
     std::shared_ptr<reply> rep = handler->HandleRequest(request_);
     EXPECT_TRUE(rep->code_ == 404);

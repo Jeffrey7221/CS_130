@@ -4,13 +4,19 @@ server {
   port 8080;
   server_name foo.com;
 
-  location "/" NotFoundHandler {
+  location "/badrequest" BadRequestHandler {
   }
 
   location "/echo" EchoHandler {
   }
 
   location "/health" HealthHandler {
+  }
+
+  location "/markdown" MarkdownHandler {
+  }
+
+  location "/" NotFoundHandler {
   }
 
   location "/apache" ReverseProxyHandler {
@@ -28,8 +34,5 @@ server {
   }
 
   location "/status" StatusHandler {
-  }
-
-  location "/badrequest" BadRequestHandler {
   }
 }

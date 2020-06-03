@@ -4,9 +4,10 @@
 #include "config_parser/nginx_config_parser.h"
 #include "config_parser/nginx_config_statement.h"
 #include "request_handler/bad_request_handler.h"
-#include "request_handler/not_found_handler.h"
 #include "request_handler/echo_request_handler.h"
 #include "request_handler/health_handler.h"
+#include "request_handler/markdown_handler.h"
+#include "request_handler/not_found_handler.h"
 #include "request_handler/redirect_handler.h"
 #include "request_handler/reverse_proxy_handler.h"
 #include "request_handler/static_request_handler.h"
@@ -368,3 +369,29 @@ TEST_F(RequestHandlerTestFix, RedirectHandlerTest) {
 	EXPECT_EQ(reply_->headers_["Location"], "http://" + host + "/static/index.html");
 	EXPECT_EQ(reply_->body_, "HTTP/1.1 302 Found\r\nLocation: " + reply_->headers_["Location"] + "\r\n\r\n");
 }
+
+// TODO: testing Markdown Handler
+/*
+TEST_F(RequestHandlerTestFix, StaticDifferentRoute) {
+
+	char incoming_request[1024] = "GET /static_2/example_config2 HTTP/1.1\r\nHost: www.w3.org/pub/WWW/TheProject.html\r\n\r\n";
+	std::string static_path = "/static_2/";
+	std::string static_root = "/tests/example_configs/";
+	StaticRequestHandler static_handler_(out_config, static_path, static_root);
+
+	std::tie(request_parser_result_, std::ignore) =
+	request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = static_handler_.HandleRequest(request_);
+
+	// compare file contents
+	file.open("./example_configs/example_config2");
+	while (file.get(chr)) {
+		file_body += chr;
+	}
+	// file_body += "\r\n";
+	file.close();
+
+	EXPECT_EQ(reply_->code_, http::server::reply::ok);
+	EXPECT_EQ(reply_->body_, file_body);
+	EXPECT_EQ(reply_->headers_["Content-Length"], std::to_string(file_body.size()));
+}*/
