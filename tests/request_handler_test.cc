@@ -271,6 +271,8 @@ TEST_F(RequestHandlerTestFix, ReverseProxyHandlerSuccess) {
 
   	std::tie(request_parser_result_, std::ignore) =
 		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	request_.headers_["Accept-Encoding"] = "gzip";
+
 	reply_ = reverse_handler_.HandleRequest(request_);
 
 	EXPECT_EQ(reply_->code_, http::server::reply::ok);
@@ -287,6 +289,9 @@ TEST_F(RequestHandlerTestFix, ReverseProxyHandlerSuccessImage) {
 
   	std::tie(request_parser_result_, std::ignore) =
 		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+
+
+	request_.headers_["Accept-Encoding"] = "gzip";
 	reply_ = reverse_handler_.HandleRequest(request_);
 
 	EXPECT_EQ(reply_->code_, http::server::reply::ok);
@@ -319,6 +324,7 @@ TEST_F(RequestHandlerTestFix, ReverseProxyHandlerNotFoundWebpage) {
 
   	std::tie(request_parser_result_, std::ignore) =
 		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	request_.headers_["Accept-Encoding"] = "gzip";
 	reply_ = reverse_handler_.HandleRequest(request_);
 
 	EXPECT_EQ(reply_->code_, http::server::reply::not_found);
@@ -335,6 +341,7 @@ TEST_F(RequestHandlerTestFix, ReverseProxyHandlerInvalidAddress) {
 
   	std::tie(request_parser_result_, std::ignore) =
 		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	request_.headers_["Accept-Encoding"] = "gzip";
 	reply_ = reverse_handler_.HandleRequest(request_);
 
 	EXPECT_EQ(reply_->code_, http::server::reply::internal_server_error);
@@ -351,6 +358,7 @@ TEST_F(RequestHandlerTestFix, ReverseProxyHandlerRedirect) {
 
   	std::tie(request_parser_result_, std::ignore) =
 		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	request_.headers_["Accept-Encoding"] = "gzip";
 	reply_ = reverse_handler_.HandleRequest(request_);
 
 	EXPECT_EQ(reply_->code_, http::server::reply::ok);
