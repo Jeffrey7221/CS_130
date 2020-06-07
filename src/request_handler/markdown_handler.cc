@@ -1,7 +1,7 @@
 #include "request_handler/markdown_handler.h"
 #include "logger/logger.h"
 
-
+// purpose of markdown handler is to draw traffic to our website and educate users
 RequestHandler* MarkdownHandler::Init(const NginxConfig& config, const std::string location_path) {
     RequestHandler* handler = new MarkdownHandler();
     handler->name = "MarkdownHandler";

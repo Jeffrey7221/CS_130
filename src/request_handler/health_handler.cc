@@ -1,14 +1,16 @@
 #include "request_handler/health_handler.h"
 #include "logger/logger.h"
 
-
+// purpose of health handler is to make sure our server is up 
+// For notifications, check GCP for more information to get notified when server is down
 RequestHandler* HealthHandler::Init(const NginxConfig& config, const std::string location_path) {
     RequestHandler* handler = new HealthHandler();
     handler->name = "HealthHandler";
     return handler;
 }
 
-// creates HTTP reply for Health Ping
+// creates HTTP reply for Health Ping 
+// GCP will check this endpoint to make sure our server is up
 std::shared_ptr<reply> HealthHandler::HandleRequest(const request& request_) {
 
     Logger& logger = Logger::getInstance(); 

@@ -357,18 +357,128 @@ TEST_F(RequestHandlerTestFix, ReverseProxyHandlerRedirect) {
 	EXPECT_EQ(reply_->headers_["Content-Type"], "text/html; charset=ISO-8859-1");
 }
 
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerPostNotFound) {
+	char incoming_request[1024] = "POST /reverse/webhp HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.google.com";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_NE(reply_->body_.size(), 0);  // body should be non empty
+
+}
+
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerPutNotFound) {
+	char incoming_request[1024] = "PUT /reverse/webhp HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.google.com";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_NE(reply_->body_.size(), 0);  // body should be non empty
+}
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerDeleteNotFound) {
+	char incoming_request[1024] = "DELETE /reverse/webhp HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.google.com";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_NE(reply_->body_.size(), 0);  // body should be non empty
+
+}
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerConnectNotFound) {
+	char incoming_request[1024] = "CONNECT /reverse/webhp HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.google.com";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_NE(reply_->body_.size(), 0);  // body should be non empty
+
+}
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerOptionsNotFound) {
+	char incoming_request[1024] = "OPTIONS /reverse/webhp HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.google.com";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_NE(reply_->body_.size(), 0);  // body should be non empty
+
+}
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerTraceNotFound) {
+	char incoming_request[1024] = "TRACE /reverse/webhp HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.google.com";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_NE(reply_->body_.size(), 0);  // body should be non empty
+
+}
+
+TEST_F(RequestHandlerTestFix, ReverseProxyHandlerPatchNotFound) {
+	char incoming_request[1024] = "PATCH /reverse/webhp HTTP/1.1\r\n\r\n";
+	int proxy_port = 80;
+	std::string proxy_dest = "www.google.com";
+	std::string location_path = "/reverse"; 
+	ReverseProxyHandler reverse_handler_(location_path, proxy_dest, proxy_port);
+
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
+	reply_ = reverse_handler_.HandleRequest(request_);
+
+	EXPECT_NE(reply_->body_.size(), 0);  // body should be non empty
+
+}
+
 TEST_F(RequestHandlerTestFix, RedirectHandlerTest) {
 	char incoming_request[1024] = "GET /redirect HTTP/1.1\r\n\r\n";
 	std::string host = "localhost";
 	int port = 8080;
 	RedirectHandler redirect_handler_(host);
 
+  	std::tie(request_parser_result_, std::ignore) =
+		request_parser_.parse(request_, incoming_request, incoming_request + strlen(incoming_request));
 	reply_ = redirect_handler_.HandleRequest(request_);
+
 
 	EXPECT_EQ(reply_->code_, http::server::reply::moved_temporarily);
 	EXPECT_EQ(reply_->headers_["Location"], "http://" + host + "/static/index.html");
 	EXPECT_EQ(reply_->body_, "HTTP/1.1 302 Found\r\nLocation: " + reply_->headers_["Location"] + "\r\n\r\n");
 }
+
+
 
 // TODO: testing Markdown Handler
 /*
