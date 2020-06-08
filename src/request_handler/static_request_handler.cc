@@ -75,6 +75,19 @@ std::shared_ptr<reply> StaticRequestHandler::HandleRequest(const request& reques
         content_.append("\r\n");
     }
 
+    auto parser = std::make_shared<maddy::Parser>();
+    std::stringstream markdown(content_);
+
+    if (new_uri.find(".md") != std::string::npos) {
+        content_type = "text/html";
+        const std::string output = parser->Parse(markdown);
+        content_ = output;
+    }
+      
+  
+
+  
+
     // create HTTP reply with the file contents as the reply body
     std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());
     rep->code_ = reply::ok; // set to http 200

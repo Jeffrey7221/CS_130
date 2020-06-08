@@ -1,6 +1,11 @@
 #include "request_handler/markdown_handler.h"
 #include "logger/logger.h"
 
+// dependencies for maddy markdown
+#include <memory>
+#include <string>
+#include "maddy/parser.h"
+
 // purpose of markdown handler is to draw traffic to our website and educate users
 RequestHandler* MarkdownHandler::Init(const NginxConfig& config, const std::string location_path) {
     RequestHandler* handler = new MarkdownHandler();
@@ -22,12 +27,17 @@ std::shared_ptr<reply> MarkdownHandler::HandleRequest(const request& request_) {
 
     // MARKDOWN --> HTML FUNCTION
 
-    
-    std::string html_markdown =
-        "<html>"
-        "<head><title>Markdown Handler</title></head>"
-        "<body><h1>Very Nice</h1></body>"
-        "</html>";
+    std::string input_ = "PLEASE EDIT ONCE DONE"; // THIS IS WHERE WE GET THE ACTUAL STRING FROM THE MARKDOWN FILE JEFF PLS EDIT
+
+
+    auto parser = std::make_shared<maddy::Parser>();
+    std::stringstream markdown(input_);
+
+
+    // set actual html from markdown parser to display on server
+    const std::string output = parser->Parse(markdown);
+    std::string html_markdown = output;
+
 
     std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());
 
