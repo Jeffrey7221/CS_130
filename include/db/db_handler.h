@@ -12,6 +12,8 @@
 #include <bsoncxx/json.hpp>
 #include "db/db_instance.h"
 
+#include "gtest/gtest.h"
+
 // USAGE:
 // db_handler db("WFH", "markdown");
 // db.insertMarkdown(<markdown to be inserted>);
@@ -24,6 +26,10 @@ class db_handler {
         int insertMarkdown(std::string md);
 
         std::vector<std::string> getTenMarkdowns();
+
+        // Give our testing class access to private data methods
+        friend class DBTestFix_BadDataWriteTest_Test;
+        friend class DBTestFix_BadClientWriteTest_Test;
 
     private:
         std::string m_dbName;

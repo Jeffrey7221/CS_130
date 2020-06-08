@@ -90,6 +90,7 @@ add_executable(server_test tests/server_test.cc)
 add_executable(logger_test tests/logger_test.cc)
 add_executable(dispatcher_test tests/dispatcher_test.cc)
 add_executable(markdown_test ${MADDY_TESTS_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/tests/main.cc)
+add_executable(db_test tests/db_test.cc)
 
 target_link_libraries(request_parser_test request_parser_lib logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(request_handler_test request_handler_lib request_parser_lib logger_lib
@@ -106,6 +107,7 @@ target_link_libraries(logger_test logger_lib gtest_main gmock_main Boost::system
 target_link_libraries(dispatcher_test request_handler_lib request_parser_lib logger_lib
     nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log ZLIB::ZLIB)
 target_link_libraries(markdown_test gmock_main)
+target_link_libraries(db_test dbhandler_lib dbinstance_lib logger_lib gtest_main gmock_main ${LIBMONGOCXX_LIBRARIES} ${LIBBSONCXX_LIBRARIES} Boost::log_setup Boost::log)
 
 # Update with test binary
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -119,13 +121,14 @@ gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/t
 gtest_discover_tests(logger_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(dispatcher_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(markdown_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(db_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)
 generate_coverage_report(TARGETS server server_lib request_handler_lib reply_lib request_parser_lib
-    nginx_config nginx_config_parser nginx_config_statement session_lib logger_lib
+    nginx_config nginx_config_parser nginx_config_statement session_lib logger_lib dbhandler_lib dbinstance_lib
     TESTS request_parser_test request_handler_test nginx_config_test nginx_config_parser_test
-    nginx_config_statement_test reply_test session_test server_test logger_test dispatcher_test markdown_test)
+    nginx_config_statement_test reply_test session_test server_test logger_test dispatcher_test markdown_test db_test)
 
 # Update with integration tests
 add_test(NAME integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_test.sh)
