@@ -6,8 +6,10 @@ FROM wfh-web-server:base as builder
 COPY . /usr/src/project
 WORKDIR /usr/src/project/build
 
+RUN pkg-config --cflags --libs libmongocxx
+
 # Build and test
-RUN cmake ..
+RUN cmake -DCMAKE_PREFIX_PATH=/usr/local/lib ..
 RUN make
 RUN ctest --output-on_failure
 
@@ -22,6 +24,14 @@ WORKDIR /app/build
 COPY --from=builder /usr/src/project/build/bin/server .
 COPY --from=builder /usr/src/project/config/nginx_config .
 COPY --from=builder /usr/src/project/data/ ../data/
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder /usr/share /usr/share
+COPY --from=builder /usr/lib /usr/lib
+COPY --from=builder /usr/bin /usr/bin
+
+# Set the library path appropriately
+RUN LD_LIBRARY_PATH=/usr/local/lib \
+    && export LD_LIBRARY_PATH 
 
 # Expose some port(s)
 EXPOSE 80

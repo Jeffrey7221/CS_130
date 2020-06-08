@@ -41,6 +41,19 @@ include_directories(include)
 # add all maddytests
 file(GLOB_RECURSE MADDY_TESTS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/tests/maddy/*.cc)
 
+# Enable MongoCXX
+find_package(libbsoncxx REQUIRED)
+find_package(libmongocxx REQUIRED)
+find_package(LibBSON ${LIBBSON_REQUIRED_VERSION} REQUIRED CONFIGS libbson-1.0-config.cmake)
+find_package(LibMongoC ${LIBMONGOC_REQUIRED_VERSION} REQUIRED CONFIGS libmongoc-1.0-config.cmake)
+include_directories(${LIBMONGOCXX_INCLUDE_DIR})
+include_directories(${LIBBSONCXX_INCLUDE_DIR})
+include_directories("/usr/local/include/mongocxx/v_noabi")
+include_directories("/usr/local/include/bsoncxx/v_noabi")
+include_directories("/usr/local/include/libmongoc-1.0")
+include_directories("/usr/local/include/libbson-1.0")
+include_directories("/usr/local")
+
 # Update name and srcs
 add_library(session_lib src/session.cc)
 add_library(server_lib src/server.cc)
@@ -56,12 +69,14 @@ add_library(request_handler_lib src/request_handler/echo_request_handler.cc
     src/request_handler/reverse_proxy_handler.cc src/request_handler/redirect_handler.cc
     src/request_handler/health_handler.cc src/request_handler/not_found_handler.cc
     src/request_handler/markdown_handler.cc)
+add_library(dbinstance_lib src/db/db_instance.cc)
+add_library(dbhandler_lib src/db/db_handler.cc)
 
 # Update executable name, srcs, and deps
 add_executable(server src/server_main.cc)
 target_link_libraries(server server_lib session_lib request_parser_lib
-    nginx_config nginx_config_parser nginx_config_statement logger_lib request_handler_lib
-    Boost::system Boost::filesystem Boost::regex Boost::log_setup Boost::log ZLIB::ZLIB)
+    nginx_config nginx_config_parser nginx_config_statement logger_lib request_handler_lib dbhandler_lib dbinstance_lib 
+    Boost::system Boost::filesystem Boost::regex Boost::log_setup Boost::log ZLIB::ZLIB ${LIBMONGOCXX_LIBRARIES} ${LIBBSONCXX_LIBRARIES})
 
 # Update test executable name, srcs, and deps
 add_executable(request_parser_test tests/request_parser_test.cc)

@@ -97,12 +97,14 @@ the entire application                    |
 
 # 2. Building the Project
 
+As of the MongoDB update (6/7), in order to build locally you must first copy the steps from base.Dockerfile into your local machine. Note that in the CS130 VM, these changes will get overwritten upon VM shutdown, so I recommend testing/building with the docker instance.
+
 ## Building Locally
 1. Build the project in a new directory
 ```
 $ mkdir build
 $ cd build
-$ cmake ..
+$ cmake -DCMAKE_PREFIX_PATH=/usr/local ..
 $ make
 ```
 
