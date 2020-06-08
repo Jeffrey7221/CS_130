@@ -25,3 +25,4 @@ steps:
     '.'
   ]
 images: ['gcr.io/$PROJECT_ID/wfh-web-server:base', 'gcr.io/$PROJECT_ID/wfh-web-server:latest']
+timeout: 3600s
