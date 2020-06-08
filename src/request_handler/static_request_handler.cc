@@ -84,10 +84,6 @@ std::shared_ptr<reply> StaticRequestHandler::HandleRequest(const request& reques
         content_ = output;
     }
       
-  
-
-  
-
     // create HTTP reply with the file contents as the reply body
     std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());
     rep->code_ = reply::ok; // set to http 200
