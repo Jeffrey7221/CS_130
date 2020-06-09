@@ -6,7 +6,7 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-
+// GCOV_EXCL_START
 #include <cstdlib>
 #include <iostream>
 #include <boost/asio.hpp>
@@ -65,3 +65,4 @@ int main(int argc, char* argv[]) {
   }
   return 0;
 }
+// GCOV_EXCL_STOP

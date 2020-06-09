@@ -2,6 +2,7 @@
  * This project is licensed under the MIT license. For more information see the
  * LICENSE file.
  */
+// GCOV_EXCL_START
 #pragma once
 
 // -----------------------------------------------------------------------------
@@ -29,3 +30,4 @@ struct ParserConfig
 // -----------------------------------------------------------------------------
 
 } // namespace maddy
+// GCOV_EXCL_STOP

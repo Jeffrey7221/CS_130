@@ -1,7 +1,7 @@
 #include <memory>
 
 #include "gmock/gmock.h"
-
+#include "gtest/gtest.h"
 #include "maddy/breaklineparser.h"
 
 // Test for break lines in HTML
