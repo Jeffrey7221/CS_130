@@ -24,7 +24,7 @@ steps:
     '-t', 'gcr.io/$PROJECT_ID/wfh-web-server:latest',
     '.'
   ]
--name: 'gcr.io/cloud-builders/docker'
+- name: 'gcr.io/cloud-builders/docker'
   args: [
     'build',
     '-f', 'docker/coverage.Dockerfile',
