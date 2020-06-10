@@ -78,18 +78,18 @@ add_executable(dispatcher_test tests/dispatcher_test.cc)
 add_executable(markdown_test ${MADDY_TESTS_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/tests/main.cc)
 target_link_libraries(request_parser_test request_parser_lib logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(request_handler_test request_handler_lib request_parser_lib logger_lib
-    nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log ZLIB::ZLIB)
+    nginx_config nginx_config_parser nginx_config_statement dbhandler_lib dbinstance_lib gtest_main Boost::log_setup Boost::log ZLIB::ZLIB ${LIBMONGOCXX_LIBRARIES} ${LIBBSONCXX_LIBRARIES})
 target_link_libraries(reply_test reply_lib logger_lib gtest_main Boost::system Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_parser_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(nginx_config_statement_test nginx_config nginx_config_parser nginx_config_statement logger_lib gtest_main Boost::log_setup Boost::log)
 target_link_libraries(session_test session_lib request_parser_lib nginx_config nginx_config_parser
-    request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log ZLIB::ZLIB)
+    request_handler_lib dbhandler_lib dbinstance_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log ZLIB::ZLIB ${LIBMONGOCXX_LIBRARIES} ${LIBBSONCXX_LIBRARIES})
 target_link_libraries(server_test server_lib session_lib request_parser_lib nginx_config
-    request_handler_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log ZLIB::ZLIB)
+    request_handler_lib dbhandler_lib dbinstance_lib logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log ZLIB::ZLIB ${LIBMONGOCXX_LIBRARIES} ${LIBBSONCXX_LIBRARIES})
 target_link_libraries(logger_test logger_lib gtest_main gmock_main Boost::system Boost::log_setup Boost::log)
 target_link_libraries(dispatcher_test request_handler_lib request_parser_lib logger_lib
-    nginx_config nginx_config_parser nginx_config_statement gtest_main Boost::log_setup Boost::log ZLIB::ZLIB)
+    nginx_config nginx_config_parser nginx_config_statement dbhandler_lib dbinstance_lib gtest_main Boost::log_setup Boost::log ZLIB::ZLIB ${LIBMONGOCXX_LIBRARIES} ${LIBBSONCXX_LIBRARIES})
 target_link_libraries(markdown_test gtest_main gmock_main)
 # Update with test binary
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)

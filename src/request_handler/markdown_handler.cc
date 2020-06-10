@@ -6,6 +6,18 @@
 #include <string>
 #include "maddy/parser.h"
 
+#include "db/db_handler.h"
+#include "db/db_instance.h"
+#include <iostream>
+#include <mongocxx/database.hpp>
+#include <mongocxx/pool.hpp>
+#include <mongocxx/client.hpp>
+#include <mongocxx/exception/bulk_write_exception.hpp>
+#include <bsoncxx/json.hpp>
+#include <bsoncxx/exception/exception.hpp>
+#include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/json.hpp>
+
 // purpose of markdown handler is to draw traffic to our website and educate users
 RequestHandler* MarkdownHandler::Init(const NginxConfig& config, const std::string location_path) {
     RequestHandler* handler = new MarkdownHandler();
@@ -57,6 +69,22 @@ std::shared_ptr<reply> MarkdownHandler::createForm(const request& request_) {
 
     logger.log("Input form has been read in, constructing HTTP reply", NORMAL);
 
+    logger.log("Retrieving 10 Markdown Posts", NORMAL);
+    db_handler db("WFH", "markdown");
+    std::vector<std::string> posts = db.getTenMarkdowns();
+    auto parser = std::make_shared<maddy::Parser>();
+    content_ += "<div><h3>10 Recent Markdown Submissions</h3></div>";
+    content_ += "<table><tr><th>Raw Input</th><th>Markdown</th>";
+    for (std::string post : posts) {
+        std::stringstream markdown(post);
+        const std::string output = parser->Parse(markdown);
+        std::string html_markdown = output;
+        content_ += "<tr><td>" + post + "</td><td>" + html_markdown + "</td></tr>";
+    }
+    content_ += "</table>";
+    content_ += "</body></html>";
+    logger.log("Added 10 Markdown examples to the page, sending reply", NORMAL);
+
         // create HTTP reply with the file contents as the reply body
     std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());
     rep->code_ = reply::ok; // set to http 200
@@ -89,6 +117,8 @@ std::shared_ptr<reply> MarkdownHandler::viewMarkdown(const request& request_) {
 
 
     // DATABASE STORE STRING
+    db_handler db("WFH", "markdown");
+    db.insertMarkdown(cleaned_input);
 
     auto parser = std::make_shared<maddy::Parser>();
     std::stringstream markdown(cleaned_input);

@@ -9,6 +9,17 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include "db/db_handler.h"
+#include <iostream>
+#include <mongocxx/database.hpp>
+#include <mongocxx/pool.hpp>
+#include <mongocxx/client.hpp>
+#include <mongocxx/exception/bulk_write_exception.hpp>
+#include <bsoncxx/json.hpp>
+#include <bsoncxx/exception/exception.hpp>
+#include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/json.hpp>
+
 using http::server::reply;
 
 // Request handler for Markdown Requests

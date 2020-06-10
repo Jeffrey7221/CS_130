@@ -8,6 +8,8 @@
 #include "session.h"
 #include "gtest/gtest.h"
 #include "request_handler/dispatcher.h"
+#include "db/db_handler.h"
+#include "db/db_instance.h"
 
 using boost::asio::ip::tcp;
 

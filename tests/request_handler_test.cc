@@ -15,6 +15,7 @@
 #include "http/request_parser.h"
 #include "http/request.h"
 #include "http/reply.h"
+#include "db/db_handler.h"
 
 // mock fixture from discussion
 class RequestHandlerTestFix : public ::testing::Test {

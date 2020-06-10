@@ -5,6 +5,8 @@
 #include "server.h"
 #include "request_handler/dispatcher.h"
 #include "request_handler/request_handler.h"
+#include "db/db_handler.h"
+#include "db/db_instance.h"
 #include <boost/asio.hpp>
 #include <stdio.h>
 
