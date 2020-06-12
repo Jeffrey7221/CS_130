@@ -25,17 +25,20 @@ RequestHandler* MarkdownHandler::Init(const NginxConfig& config, const std::stri
     return handler;
 }
 
-// creates HTTP reply for 404 requests
+// creates HTTP reply for markdown requests
 std::shared_ptr<reply> MarkdownHandler::HandleRequest(const request& request_) {
 
     Logger& logger = Logger::getInstance(); 
     logger.log("Received Markdown handler request at path" + request_.uri_, NORMAL);
 
     std::shared_ptr<reply> rep;
-    if(request_.uri_ == "/markdown") {
+    if (request_.uri_ == "/markdown") {
         rep = createForm(request_);
-    } else if (request_.uri_.substr(0, 14) == "/markdown/view") {
+    } else if (request_.uri_.substr(0, 30) == "/markdown/view?markdown_input=") {
         rep = viewMarkdown(request_);
+    } else {
+        // our server follows the convention where extra URL is ignored
+        rep = createForm(request_);
     }
     return rep;
 }
@@ -85,7 +88,7 @@ std::shared_ptr<reply> MarkdownHandler::createForm(const request& request_) {
     content_ += "</body></html>";
     logger.log("Added 10 Markdown examples to the page, sending reply", NORMAL);
 
-        // create HTTP reply with the file contents as the reply body
+    // create HTTP reply with the file contents as the reply body
     std::shared_ptr<reply> rep = std::shared_ptr<reply>(new reply());
     rep->code_ = reply::ok; // set to http 200
     rep->headers_["Content-Length"] = std::to_string(content_.length());
@@ -138,8 +141,7 @@ std::shared_ptr<reply> MarkdownHandler::viewMarkdown(const request& request_) {
     return rep;
 }
 
-void MarkdownHandler::urldecode2(char *dst, const char *src)
-{
+void MarkdownHandler::urldecode2(char *dst, const char *src) {
     char a, b;
     while (*src) {
         if ((*src == '%') &&

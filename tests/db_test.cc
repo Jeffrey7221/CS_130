@@ -1,9 +1,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-
 #include "db/db_handler.h"
 #include "db/db_instance.h"
-
 #include <iostream>
 #include <mongocxx/database.hpp>
 #include <mongocxx/pool.hpp>
@@ -13,7 +11,6 @@
 #include <bsoncxx/exception/exception.hpp>
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/json.hpp>
-#include "db/db_instance.h"
 
 class DBTestFix : public :: testing::Test {
     protected:
@@ -25,7 +22,7 @@ class DBTestFix : public :: testing::Test {
 
 // Ensure that an instance and pool of connections is created without error
 TEST_F(DBTestFix, CreateInstanceTest) {
-    try { db_handler test("TEST", "test_collection");} catch (...) {}
+    try { db_handler test("TEST", "test_collection"); } catch (...) {}
     EXPECT_TRUE(true);
 }
 

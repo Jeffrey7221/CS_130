@@ -47,8 +47,6 @@ TEST_F(ReplyTestFix, createdReply) {
 	buffers = rep->to_buffers();
 }
 
-
-
 //test reply for accepted response
 TEST_F(ReplyTestFix, acceptedReply) {
 
@@ -68,8 +66,6 @@ TEST_F(ReplyTestFix, acceptedReply) {
 
 	buffers = rep->to_buffers();
 }
-
-
 
 //test reply for no_content response
 TEST_F(ReplyTestFix, no_contentReply) {
@@ -171,8 +167,6 @@ TEST_F(ReplyTestFix, not_modifiedReply) {
 	buffers = rep->to_buffers();
 }
 
-
-
 //test reply for bad request response
 TEST_F(ReplyTestFix, bad_requestReply) {
 
@@ -192,7 +186,6 @@ TEST_F(ReplyTestFix, bad_requestReply) {
 
 	buffers = rep->to_buffers();
 }
-
 
 //test reply for unauth response
 TEST_F(ReplyTestFix, unauthorizedReply) {
@@ -214,8 +207,6 @@ TEST_F(ReplyTestFix, unauthorizedReply) {
 	buffers = rep->to_buffers();
 }
 
-
-
 //test reply for forbidden response
 TEST_F(ReplyTestFix, forbiddenReply) {
 
@@ -236,8 +227,6 @@ TEST_F(ReplyTestFix, forbiddenReply) {
 	buffers = rep->to_buffers();
 }
 
-
-
 //test reply for not found response
 TEST_F(ReplyTestFix, not_foundReply) {
 
@@ -257,8 +246,6 @@ TEST_F(ReplyTestFix, not_foundReply) {
 
 	buffers = rep->to_buffers();
 }
-
-
 
 //test reply for internal server response
 TEST_F(ReplyTestFix, internal_server_errorReply) {
@@ -301,7 +288,6 @@ TEST_F(ReplyTestFix, not_implementedReply) {
 	buffers = rep->to_buffers();
 }
 
-
 //test reply for bad gateway response
 TEST_F(ReplyTestFix, bad_gatewayReply) {
 
@@ -321,8 +307,6 @@ TEST_F(ReplyTestFix, bad_gatewayReply) {
 
 	buffers = rep->to_buffers();
 }
-
-
 
 //test reply for service unavailable response
 TEST_F(ReplyTestFix, service_unavailableReply) {
